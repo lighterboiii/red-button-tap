@@ -1,0 +1,69 @@
+@use '../../stylesheets/mixins.scss' as *;
+
+* {
+  @include indents();
+  box-sizing: border-box
+}
+
+.timeManager {
+  @include position(relative);
+  @include flexContainer(column, space-between, center, 10px);
+  text-align: center;
+  height: 100vh;
+
+  @media screen and (max-width: 1024px) {
+    @include indents(0 10px,0);
+  }
+
+  &__buttons {
+    @include flexContainer(row, space-between, center, 8px);
+    @include indents(20px 0 40px 0, 0);
+
+    @media screen and (max-width: 580px) {
+      @include flexContainer(column, center, center, 8px);
+      @include indents(10px, 0);
+      width: 100%;
+    }
+  }
+
+  &__inputWrapper {
+    @include indents(40px 0 20px 0, 0);
+    width: 100%;
+
+    @media screen and (max-width: 580px) {
+      @include indents(10px, 0);
+    }
+  }
+
+  &__input {
+    @include indents(20px 16px, 0);
+    border-radius: 10px;
+    border: 1px black solid;
+    width: 35%;
+
+    &::placeholder {
+      color: black;
+      opacity: .8;
+    }
+
+    @media screen and (max-width: 1024px) {
+      width: 100%;
+    }
+  }
+
+  &__infoText {
+    @include infoTextStyle()
+  }
+
+  &__alert {
+    @include position(absolute, $top: 20%, $left: 50%);
+    transform: translate(-50%);
+    @include infoTextStyle();
+  }
+
+  &__pause {
+    @include position(absolute, $top: 30%, $left: 50%);
+    transform: translate(-50%);
+    @include infoTextStyle();
+  }
+}

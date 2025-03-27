@@ -1,0 +1,26 @@
+@use '../../stylesheets/mixins.scss' as *;
+
+.timer {
+  @include position(relative);
+  @include indents();
+  @include flexContainer(column, center, center);
+  flex-grow: 1;
+
+  &__time {
+    font-size: 230px;
+    font-weight: 900;
+
+    @media screen and (max-width: 859px) {
+      font-size: 144px;
+    }
+
+    @media screen and (max-width: 430px) {
+      font-size: 100px;
+    }
+
+    &__buttons {
+      @include position(absolute, $bottom: 0, $left: 50%);
+      transform: translate(-50%);
+    }
+  }
+}

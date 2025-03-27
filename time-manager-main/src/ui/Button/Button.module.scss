@@ -1,0 +1,32 @@
+@use '../../stylesheets/mixins.scss' as *;
+
+.button {
+  @include indents(16px);
+  border: .5px black solid;
+  border-radius: 10px;
+  width: 164px;
+  height: 60px;
+  background: transparent;
+  transition: transform 0.3s ease;
+  color: black;
+
+  &:hover {
+    opacity: .8;
+    transform: scale(1.1);
+    cursor: pointer;
+
+    @media screen and (max-width: 580px) {
+      transform: none;
+      opacity: .5;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 120px;
+    @include indents(10px);
+  }
+
+  @media screen and (max-width: 580px) {
+    width: 100%;
+  }
+}
