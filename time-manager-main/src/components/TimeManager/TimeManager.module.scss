@@ -1,69 +1,205 @@
 @use '../../stylesheets/mixins.scss' as *;
 
-* {
-  @include indents();
-  box-sizing: border-box
-}
-
 .timeManager {
   @include position(relative);
-  @include flexContainer(column, space-between, center, 10px);
-  text-align: center;
+  @include indents();
+  @include flexContainer(column, center, center);
+  flex-grow: 1;
+  background: linear-gradient(45deg, #0a0a0a, #1a0026);
   height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: 'Orbitron', sans-serif;
 
-  @media screen and (max-width: 1024px) {
-    @include indents(0 10px,0);
-  }
-
-  &__buttons {
-    @include flexContainer(row, space-between, center, 8px);
-    @include indents(20px 0 40px 0, 0);
-
-    @media screen and (max-width: 580px) {
-      @include flexContainer(column, center, center, 8px);
-      @include indents(10px, 0);
-      width: 100%;
-    }
-  }
-
-  &__inputWrapper {
-    @include indents(40px 0 20px 0, 0);
+  &__container {
+    @include flexContainer(column, space-between, center);
+    gap: 2rem;
+    z-index: 1;
     width: 100%;
+    height: 100%;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 
+      0 0 20px rgba(255, 0, 255, 0.3),
+      0 0 40px rgba(0, 255, 255, 0.2),
+      inset 0 0 30px rgba(255, 0, 255, 0.2);
+    border: 1px solid rgba(255, 0, 255, 0.2);
+  }
 
-    @media screen and (max-width: 580px) {
-      @include indents(10px, 0);
+  &__controls {
+    @include flexContainer(row, center, center);
+    gap: 1rem;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  &__button {
+    padding: 1rem 2rem;
+    border: 2px solid #ff00ff;
+    background: rgba(255, 0, 255, 0.1);
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    min-width: 200px;
+    text-shadow: 0 0 5px #ff00ff;
+    box-shadow: 
+      0 0 10px rgba(255, 0, 255, 0.3),
+      inset 0 0 10px rgba(255, 0, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 0, 255, 0.2);
+      color: #fff;
+      box-shadow: 
+        0 0 20px rgba(255, 0, 255, 0.5),
+        0 0 30px rgba(255, 0, 255, 0.3),
+        inset 0 0 15px rgba(255, 0, 255, 0.3);
+      text-shadow: 0 0 8px #fff;
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: #666;
+      color: #666;
+      box-shadow: none;
+      text-shadow: none;
+    }
+
+    &--active {
+      background: rgba(255, 0, 255, 0.3);
+      color: #fff;
+      box-shadow: 
+        0 0 20px rgba(255, 0, 255, 0.5),
+        0 0 30px rgba(255, 0, 255, 0.3),
+        inset 0 0 15px rgba(255, 0, 255, 0.3);
+      text-shadow: 0 0 8px #fff;
     }
   }
 
   &__input {
-    @include indents(20px 16px, 0);
-    border-radius: 10px;
-    border: 1px black solid;
-    width: 35%;
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px solid #00ffff;
+    color: #fff;
+    padding: 1rem;
+    font-size: 1.2rem;
+    width: 150px;
+    text-align: center;
+    border-radius: 8px;
+    margin: 0 0.5rem;
+    font-family: 'Orbitron', sans-serif;
+    box-shadow: 
+      0 0 10px rgba(0, 255, 255, 0.3),
+      inset 0 0 10px rgba(0, 255, 255, 0.2);
+    text-shadow: 0 0 5px #00ffff;
+
+    &:focus {
+      outline: none;
+      box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.5),
+        0 0 30px rgba(0, 255, 255, 0.3),
+        inset 0 0 15px rgba(0, 255, 255, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: #666;
+      box-shadow: none;
+      text-shadow: none;
+    }
 
     &::placeholder {
-      color: black;
-      opacity: .8;
+      color: #cccccc;
+      text-transform: uppercase;
+    }
+  }
+
+  &__mode_switch {
+    @include flexContainer(row, center, center);
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  &__info {
+    color: #fff;
+    font-size: 1.2rem;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    opacity: 0.8;
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeManager {
+    padding: 1rem;
+
+    &__container {
+      padding: 1rem;
     }
 
-    @media screen and (max-width: 1024px) {
+    &__controls {
+      // flex-direction: column;
       width: 100%;
+      max-width: 300px;
     }
-  }
 
-  &__infoText {
-    @include infoTextStyle()
-  }
+    &__button {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      min-width: unset;
+    }
 
-  &__alert {
-    @include position(absolute, $top: 20%, $left: 50%);
-    transform: translate(-50%);
-    @include infoTextStyle();
-  }
+    &__input {
+      width: 100%;
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
 
-  &__pause {
-    @include position(absolute, $top: 30%, $left: 50%);
-    transform: translate(-50%);
-    @include infoTextStyle();
+    &__mode_switch {
+      flex-direction: column;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    &__info {
+      font-size: 1rem;
+      padding: 0 1rem;
+    }
   }
 }
