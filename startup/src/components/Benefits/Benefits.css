@@ -1,4 +1,8 @@
-/* Benefits — горизонтальный скролл, скроллбар скрыт */
+/* Benefits — контейнер с overflow = ref, внутри только карточки */
+.benefits-wrap {
+  width: 100%;
+}
+
 .benefits {
   overflow-x: auto;
   overflow-y: hidden;

@@ -89,16 +89,18 @@ export default function Benefits() {
   }, []);
 
   return (
-    <section className="benefits" ref={scrollRef}>
-      <div className="benefits__content">
-        <h2 className="benefits__title">Что получает бизнес</h2>
-        <div className="benefits__grid">
-          {BENEFITS.map((item) => (
-            <article key={item.title} className="benefits__card">
-              <h3 className="benefits__card-title">{item.title}</h3>
-              <p className="benefits__card-text">{item.text}</p>
-            </article>
-          ))}
+    <section className="benefits-wrap">
+      <h2 className="benefits__title">Что получает бизнес</h2>
+      <div className="benefits" ref={scrollRef}>
+        <div className="benefits__content">
+          <div className="benefits__grid">
+            {BENEFITS.map((item) => (
+              <article key={item.title} className="benefits__card">
+                <h3 className="benefits__card-title">{item.title}</h3>
+                <p className="benefits__card-text">{item.text}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>
