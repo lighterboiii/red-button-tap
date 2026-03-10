@@ -1,11 +1,12 @@
-/* Value — в духе Apple, адаптивная сетка */
+/* Value — паддинги внутри компонента */
 .value {
   margin-top: 32px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .value__section {
-  padding: 24px 20px;
-  border-radius: var(--radius);
+  padding: 24px 0;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-card);
@@ -26,7 +27,6 @@
 
 .value__card {
   padding: 18px 16px;
-  border-radius: var(--radius-sm);
   background: var(--bg-muted);
   border: 1px solid var(--border-subtle);
 }
@@ -49,10 +49,12 @@
 @media (min-width: 480px) {
   .value {
     margin-top: 40px;
+    padding-left: 28px;
+    padding-right: 28px;
   }
 
   .value__section {
-    padding: 28px 24px;
+    padding: 28px 0;
   }
 
   .value__grid {
@@ -64,10 +66,15 @@
   }
 }
 
-/* 734px+ — две колонки на планшете или три */
+/* 734px+ */
 @media (min-width: 734px) {
+  .value {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+
   .value__section {
-    padding: 32px 28px;
+    padding: 32px 0;
   }
 
   .value__grid {
@@ -80,14 +87,16 @@
   }
 }
 
-/* 1024px+ — три колонки */
+/* 1024px+ */
 @media (min-width: 1024px) {
   .value {
     margin-top: 48px;
+    padding-left: 64px;
+    padding-right: 64px;
   }
 
   .value__section {
-    padding: 40px 36px;
+    padding: 40px 0;
   }
 
   .value__grid {
