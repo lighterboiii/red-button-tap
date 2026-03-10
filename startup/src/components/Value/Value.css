@@ -1,0 +1,109 @@
+/* Value — в духе Apple, адаптивная сетка */
+.value {
+  margin-top: 32px;
+}
+
+.value__section {
+  padding: 24px 20px;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+
+.value__title {
+  margin: 0 0 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.value__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.value__card {
+  padding: 18px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.value__card-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.value__card-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.47;
+  color: var(--text-muted);
+}
+
+/* 480px+ */
+@media (min-width: 480px) {
+  .value {
+    margin-top: 40px;
+  }
+
+  .value__section {
+    padding: 28px 24px;
+  }
+
+  .value__grid {
+    gap: 18px;
+  }
+
+  .value__card {
+    padding: 20px 18px;
+  }
+}
+
+/* 734px+ — две колонки на планшете или три */
+@media (min-width: 734px) {
+  .value__section {
+    padding: 32px 28px;
+  }
+
+  .value__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .value__card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 1024px+ — три колонки */
+@media (min-width: 1024px) {
+  .value {
+    margin-top: 48px;
+  }
+
+  .value__section {
+    padding: 40px 36px;
+  }
+
+  .value__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .value__card:last-child {
+    grid-column: auto;
+  }
+
+  .value__card {
+    padding: 24px 20px;
+  }
+
+  .value__card-text {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,44 @@
+/* Footer — в духе Apple, адаптивные отступы */
+.footer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+.footer__copy {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 480px+ */
+@media (min-width: 480px) {
+  .footer {
+    margin-top: 40px;
+    padding-top: 24px;
+  }
+
+  .footer__copy {
+    font-size: 13px;
+  }
+}
+
+/* 734px+ */
+@media (min-width: 734px) {
+  .footer {
+    margin-top: 48px;
+    padding-top: 28px;
+  }
+}
+
+/* 1024px+ */
+@media (min-width: 1024px) {
+  .footer {
+    margin-top: 56px;
+    padding-top: 32px;
+  }
+
+  .footer__copy {
+    font-size: 14px;
+  }
+}

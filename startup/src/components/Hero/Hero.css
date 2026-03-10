@@ -1,0 +1,175 @@
+/* Hero — в духе Apple, адаптив во всех точках */
+.hero {
+  border-radius: var(--radius);
+  padding: 28px 20px 32px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-subtle);
+}
+
+.hero__content {
+  max-width: 640px;
+}
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  margin-bottom: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  border: 1px solid rgba(0, 113, 227, 0.2);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.hero__title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.1;
+  margin: 0 0 14px;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hero__subtitle {
+  margin: 0 0 24px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.hero__cta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.hero__input {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-muted);
+  color: var(--text);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero__input::placeholder {
+  color: var(--text-muted);
+}
+
+.hero__input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.hero__button {
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: inherit;
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.hero__button:hover {
+  background: var(--accent-hover);
+}
+
+.hero__button:active {
+  opacity: 0.9;
+}
+
+.hero__note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.hero__pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.hero__pill {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* 480px+ */
+@media (min-width: 480px) {
+  .hero {
+    padding: 32px 28px 36px;
+  }
+
+  .hero__title {
+    margin-bottom: 16px;
+  }
+
+  .hero__subtitle {
+    font-size: 1.05rem;
+    margin-bottom: 28px;
+  }
+
+  .hero__pill-row {
+    margin-top: 20px;
+    gap: 10px;
+  }
+}
+
+/* 734px+ (планшет) */
+@media (min-width: 734px) {
+  .hero {
+    padding: 40px 40px 44px;
+  }
+
+  .hero__cta {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero__input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .hero__button {
+    flex-shrink: 0;
+  }
+}
+
+/* 1024px+ (десктоп) */
+@media (min-width: 1024px) {
+  .hero {
+    padding: 48px 48px 52px;
+  }
+
+  .hero__title {
+    font-size: 2.5rem;
+  }
+
+  .hero__subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 32px;
+  }
+}
