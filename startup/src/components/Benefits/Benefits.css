@@ -1,19 +1,24 @@
-/* Benefits — грид в 2 колонки, карточки квадратные, не более 50% ширины */
+/* Benefits — горизонтальный скролл, скроллбар скрыт */
 .benefits {
-  padding: 40px 20px 48px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-card);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.benefits::-webkit-scrollbar {
+  display: none;
 }
 
 .benefits__content {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
+  width: max-content;
+  min-width: 100%;
 }
 
 .benefits__title {
-  margin: 0 0 24px;
+  margin: 0;
+  padding: 32px 20px 24px;
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.022em;
@@ -22,68 +27,88 @@
 }
 
 .benefits__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  display: flex;
+  flex-direction: row;
+  width: max-content;
 }
 
 .benefits__card {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  padding: 18px 16px 20px;
+  flex: 0 0 100vw;
+  width: 100vw;
+  box-sizing: border-box;
+  min-height: 80vh;
+  padding: 32px 24px 48px;
   background: var(--bg-muted);
   border: 1px solid var(--border-subtle);
+  border-left: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 0;
+}
+
+.benefits__card:first-of-type {
+  border-left: 1px solid var(--border-subtle);
 }
 
 .benefits__card-title {
-  margin: 0 0 8px;
-  font-size: 1rem;
+  margin: 0 0 16px;
+  font-size: 1.35rem;
   font-weight: 600;
   color: var(--text);
 }
 
 .benefits__card-text {
   margin: 0;
-  font-size: 0.9375rem;
-  line-height: 1.5;
+  font-size: 1.05rem;
+  line-height: 1.55;
   color: var(--text-muted);
+  max-width: 560px;
 }
 
 /* 480px+ */
 @media (min-width: 480px) {
-  .benefits {
-    padding: 48px 28px 56px;
+  .benefits__title {
+    padding: 40px 28px 28px;
+    font-size: 1.65rem;
   }
 
-  .benefits__grid {
-    gap: 20px;
+  .benefits__card {
+    min-height: 82vh;
+    padding: 40px 32px 56px;
+  }
+
+  .benefits__card-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .benefits__card-text {
+    font-size: 1.1rem;
   }
 }
 
 @media (min-width: 734px) {
-  .benefits {
-    padding: 56px 48px 64px;
+  .benefits__title {
+    padding: 48px 48px 32px;
+    font-size: 1.75rem;
   }
 
-  .benefits__grid {
-    gap: 24px;
+  .benefits__card {
+    min-height: 85vh;
+    padding: 48px 48px 64px;
+  }
+
+  .benefits__card-title {
+    font-size: 1.65rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .benefits {
-    padding: 64px 64px 72px;
-  }
-
-  .benefits__grid {
-    gap: 28px;
-  }
-
   .benefits__card {
-    padding: 24px 20px 28px;
+    padding: 56px 64px 72px;
+  }
+
+  .benefits__card-text {
+    max-width: 640px;
   }
 }

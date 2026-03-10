@@ -1,8 +1,9 @@
+import { useRef, useEffect } from 'react';
 import './Benefits.css';
 
 /**
- * Что получает бизнес — 4 равные карточки ценности.
- * Тексты-заглушки, позже подставим финальные формулировки из скриншотов.
+ * Что получает бизнес — горизонтальный скролл колесиком/тачпадом:
+ * вертикальный скролл переводится в боковой, одна карточка пролистывается за несколько прокруток (параллакс).
  */
 const BENEFITS = [
   {
@@ -23,9 +24,72 @@ const BENEFITS = [
   },
 ];
 
+const WHEEL_FACTOR = 0.35; // одна карточка уезжает за несколько прокруток
+const LERP = 0.06;        // задержка: контент «нехотя» догоняет (параллакс)
+
 export default function Benefits() {
+  const scrollRef = useRef(null);
+  const targetRef = useRef(0);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const tick = () => {
+      const target = targetRef.current;
+      const current = el.scrollLeft;
+      const next = current + (target - current) * LERP;
+      if (Math.abs(next - target) < 0.5) {
+        el.scrollLeft = target;
+        rafRef.current = null;
+        return;
+      }
+      el.scrollLeft = next;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    const onWheel = (e) => {
+      const { deltaY } = e;
+      if (deltaY === 0) return;
+
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) return;
+
+      const atStart = el.scrollLeft <= 1;
+      const atEnd = el.scrollLeft >= maxScroll - 1;
+      const scrollingUp = deltaY < 0;
+      const scrollingDown = deltaY > 0;
+
+      // В начале блока и скролл вверх — отдаём странице (скролл вверх работает)
+      if (atStart && scrollingUp) return;
+      // В конце блока и скролл вниз — отдаём странице
+      if (atEnd && scrollingDown) return;
+
+      const delta = deltaY * WHEEL_FACTOR;
+      targetRef.current = Math.max(0, Math.min(maxScroll, targetRef.current + delta));
+
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+      e.preventDefault();
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', onWheel);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    targetRef.current = el.scrollLeft;
+  }, []);
+
   return (
-    <section className="benefits">
+    <section className="benefits" ref={scrollRef}>
       <div className="benefits__content">
         <h2 className="benefits__title">Что получает бизнес</h2>
         <div className="benefits__grid">
