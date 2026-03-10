@@ -1,13 +1,18 @@
 import Hero from './components/Hero/Hero';
-import Value from './components/Value/Value';
+import Problem from './components/Problem/Problem';
+import Solution from './components/Solution/Solution';
+import Benefits from './components/Benefits/Benefits';
 import Footer from './components/Footer/Footer';
 
 export default function App() {
   return (
     <div id="app">
       <Hero />
-      <Value />
+      <Problem />
+      <Solution />
+      <Benefits />
       <Footer />
     </div>
   );
 }
+

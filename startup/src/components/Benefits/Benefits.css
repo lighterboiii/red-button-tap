@@ -1,0 +1,89 @@
+/* Benefits — грид в 2 колонки, карточки квадратные, не более 50% ширины */
+.benefits {
+  padding: 40px 20px 48px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+
+.benefits__content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.benefits__title {
+  margin: 0 0 24px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--text);
+  text-align: center;
+}
+
+.benefits__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.benefits__card {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 18px 16px 20px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+.benefits__card-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.benefits__card-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* 480px+ */
+@media (min-width: 480px) {
+  .benefits {
+    padding: 48px 28px 56px;
+  }
+
+  .benefits__grid {
+    gap: 20px;
+  }
+}
+
+@media (min-width: 734px) {
+  .benefits {
+    padding: 56px 48px 64px;
+  }
+
+  .benefits__grid {
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .benefits {
+    padding: 64px 64px 72px;
+  }
+
+  .benefits__grid {
+    gap: 28px;
+  }
+
+  .benefits__card {
+    padding: 24px 20px 28px;
+  }
+}
