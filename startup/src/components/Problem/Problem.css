@@ -1,6 +1,5 @@
 /* Problem — 4 квадратные карточки в 2 колонки, как Benefits */
 .problem {
-  padding: 40px 20px 48px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-card);
@@ -146,11 +145,11 @@
 
 @media (min-width: 1024px) {
   .problem {
-    padding: 64px 64px 72px;
+    padding: 40px 16px 16px;
   }
 
   .problem__grid {
-    gap: 28px;
+    gap: 16px;
   }
 
   .problem__card {

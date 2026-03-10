@@ -1,6 +1,6 @@
 /* WhyNow — почему сейчас / историчность рынка, три референса в одном блоке, выше по высоте */
 .why-now {
-  padding: 56px 20px 64px;
+  padding: 24px 16px 24px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
@@ -202,7 +202,7 @@
 
 @media (min-width: 734px) {
   .why-now {
-    padding: 80px 48px 88px;
+    padding: 24px 16px 24px;
   }
 
   .why-now__lead {
@@ -216,7 +216,7 @@
 
   .why-now__cards {
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 16px;
   }
 
   .why-now__card-title {
@@ -231,11 +231,11 @@
 
 @media (min-width: 1024px) {
   .why-now {
-    padding: 96px 48px 104px;
+    padding: 24px 16px 24px;
   }
 
   .why-now__cards {
-    gap: 28px;
+    gap: 16px;
   }
 
   .why-now__title {

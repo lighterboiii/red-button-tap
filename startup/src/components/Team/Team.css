@@ -1,0 +1,143 @@
+/* Team — команда, два человека, фото + имя + регалии + описание */
+.team {
+  padding: 56px 20px 64px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+}
+
+.team__inner {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.team__title {
+  margin: 0 0 20px;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--text);
+}
+
+.team__lead {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.team__thesis {
+  margin: 0 0 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--accent);
+}
+
+.team__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+.team__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.team__photo {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 280px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.team__photo-placeholder {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.team__name {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.team__credentials {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.team__description {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+@media (min-width: 480px) {
+  .team {
+    padding: 64px 28px 72px;
+  }
+
+  .team__photo {
+    max-width: 240px;
+  }
+}
+
+@media (min-width: 734px) {
+  .team {
+    padding: 80px 48px 88px;
+  }
+
+  .team__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .team__lead {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+  }
+
+  .team__thesis {
+    margin-bottom: 48px;
+  }
+
+  .team__photo {
+    max-width: 100%;
+  }
+
+  .team__name {
+    font-size: 1.35rem;
+  }
+
+  .team__description {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .team {
+    padding: 96px 48px 104px;
+  }
+
+  .team__grid {
+    gap: 56px;
+  }
+
+  .team__title {
+    font-size: 2rem;
+  }
+}

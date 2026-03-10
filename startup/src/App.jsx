@@ -5,6 +5,8 @@ import Benefits from './components/Benefits/Benefits';
 import Differentiation from './components/Differentiation/Differentiation';
 import WhyNow from './components/WhyNow/WhyNow';
 import CaseSkadi from './components/CaseSkadi/CaseSkadi';
+import Team from './components/Team/Team';
+import CTA from './components/CTA/CTA';
 import Footer from './components/Footer/Footer';
 
 export default function App() {
@@ -17,6 +19,8 @@ export default function App() {
       <Differentiation />
       <WhyNow />
       <CaseSkadi />
+      <Team />
+      <CTA />
       <Footer />
     </div>
   );
