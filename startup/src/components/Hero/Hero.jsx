@@ -30,7 +30,7 @@ export default function Hero() {
   };
 
   return (
-    <header className="hero">
+    <header className="hero" id="hero">
       <div className="hero__content">
         <div className="hero__eyebrow">{HERO.eyebrow}</div>
         <h1 className="hero__title">{HERO.title}</h1>

@@ -26,7 +26,7 @@ const TEAM = {
 
 export default function Team() {
   return (
-    <section className="team">
+    <section className="team" id="team">
       <div className="team__inner">
         <h2 className="team__title">{TEAM.title}</h2>
         <p className="team__lead">{TEAM.lead}</p>

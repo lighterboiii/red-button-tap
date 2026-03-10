@@ -21,7 +21,7 @@ const DIFFERENTIATION = {
 
 export default function Differentiation() {
   return (
-    <section className="differentiation">
+    <section className="differentiation" id="differentiation">
       <div className="differentiation__inner">
         <div className="differentiation__text">
           <h2 className="differentiation__title">

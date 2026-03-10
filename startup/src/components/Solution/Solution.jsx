@@ -14,7 +14,7 @@ const SOLUTION = {
 
 export default function Solution() {
   return (
-    <section className="solution">
+    <section className="solution" id="solution">
       <div className="solution__content">
         <h2 className="solution__title">{SOLUTION.title}</h2>
         <p className="solution__lead">{SOLUTION.lead}</p>

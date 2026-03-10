@@ -34,7 +34,7 @@ const WHY_NOW = {
 
 export default function WhyNow() {
   return (
-    <section className="why-now">
+    <section className="why-now" id="why-now">
       <div className="why-now__inner">
         <h2 className="why-now__title">{WHY_NOW.title}</h2>
         <p className="why-now__lead">{WHY_NOW.lead}</p>

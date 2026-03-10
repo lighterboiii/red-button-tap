@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="footer__inner">
         <div className="footer__brand">
           <span className="footer__logo">XRABLE</span>
-          <span className="footer__tagline">Платформенный слой для XR и wearable</span>
+          <span className="footer__tagline">Платформенный слой для носимых устройств</span>
         </div>
         <div className="footer__links">
           <a href="mailto:hello@xrable.com" className="footer__link">

@@ -18,7 +18,7 @@ const CTA = {
 
 export default function CTABlock() {
   return (
-    <section className="cta">
+    <section className="cta" id="cta">
       <div className="cta__inner">
         <h2 className="cta__title">{CTA.title}</h2>
         <p className="cta__lead">{CTA.lead}</p>

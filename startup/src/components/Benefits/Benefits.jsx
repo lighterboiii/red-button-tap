@@ -89,7 +89,7 @@ export default function Benefits() {
   }, []);
 
   return (
-    <section className="benefits-wrap">
+    <section className="benefits-wrap" id="benefits">
       <h2 className="benefits__title">Что получает бизнес</h2>
       <div className="benefits" ref={scrollRef}>
         <div className="benefits__content">

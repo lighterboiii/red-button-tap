@@ -18,7 +18,7 @@ const CASE_SKADI = {
 
 export default function CaseSkadi() {
   return (
-    <section className="case-skadi">
+    <section className="case-skadi" id="case">
       <div className="case-skadi__wrap">
         <div className="case-skadi__inner">
           <p className="case-skadi__eyebrow">{CASE_SKADI.eyebrow}</p>

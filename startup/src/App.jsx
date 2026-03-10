@@ -1,3 +1,4 @@
+import Header from './components/Header/Header';
 import Hero from './components/Hero/Hero';
 import Problem from './components/Problem/Problem';
 import Solution from './components/Solution/Solution';
@@ -12,6 +13,7 @@ import Footer from './components/Footer/Footer';
 export default function App() {
   return (
     <div id="app">
+      <Header />
       <Hero />
       <Problem />
       <Solution />

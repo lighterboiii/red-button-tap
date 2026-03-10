@@ -34,7 +34,7 @@ const PROBLEM_CARDS = [
 
 export default function Problem() {
   return (
-    <section className="problem">
+    <section className="problem" id="problem">
       <div className="problem__content">
         <h2 className="problem__title">Проблема рынка</h2>
         <div className="problem__grid">
