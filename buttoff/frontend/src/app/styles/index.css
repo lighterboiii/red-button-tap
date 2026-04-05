@@ -1,0 +1,330 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: radial-gradient(120% 80% at 50% 0%, #1a1a22 0%, #0f0f12 55%);
+  color: #ececf1;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+.home-page {
+  min-height: 100dvh;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tap-panel {
+  width: 100%;
+  max-width: 28rem;
+  text-align: center;
+}
+
+.tap-panel__title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 5vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.tap-panel__lead {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #a4a4b0;
+}
+
+.tap-panel__button-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.tap-button {
+  position: relative;
+  width: min(200px, 55vw);
+  height: min(200px, 55vw);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: linear-gradient(145deg, #ff3b3b 0%, #c41e1e 100%);
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow:
+    0 8px 24px rgba(196, 30, 30, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.tap-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.tap-button:disabled {
+  cursor: wait;
+  opacity: 0.92;
+}
+
+.tap-button__glow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 80, 80, 0.35) 0%, transparent 70%);
+  z-index: -1;
+  opacity: 0.9;
+}
+
+.tap-button--rolling {
+  animation: tap-pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes tap-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 24px rgba(196, 30, 30, 0.45),
+      inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 12px 32px rgba(255, 60, 60, 0.55),
+      inset 0 2px 0 rgba(255, 255, 255, 0.25);
+  }
+}
+
+.tap-panel__rolling {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #8888a0;
+}
+
+.tap-panel__error {
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: rgba(180, 60, 60, 0.2);
+  color: #ffb4b4;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.tap-panel__error code {
+  font-size: 0.75rem;
+  word-break: break-all;
+}
+
+.tap-panel__outcome {
+  margin-top: 0.5rem;
+  padding: 1rem 1rem 1.1rem;
+  border-radius: 14px;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tap-panel__outcome--common {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tap-panel__outcome--uncommon {
+  background: rgba(80, 160, 255, 0.12);
+  border-color: rgba(100, 180, 255, 0.25);
+}
+
+.tap-panel__outcome--rare {
+  background: rgba(180, 100, 255, 0.14);
+  border-color: rgba(200, 140, 255, 0.35);
+}
+
+.tap-panel__outcome--legendary {
+  background: linear-gradient(135deg, rgba(255, 200, 80, 0.2) 0%, rgba(255, 120, 60, 0.15) 100%);
+  border-color: rgba(255, 200, 120, 0.45);
+  box-shadow: 0 0 24px rgba(255, 180, 80, 0.15);
+}
+
+.tap-panel__rarity-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.tap-panel__rarity {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #b8b8c8;
+}
+
+.tap-panel__chance {
+  font-size: 0.7rem;
+  color: #8a8a9a;
+}
+
+.tap-panel__label {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.tap-panel__message {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #d8d8e4;
+}
+
+.tap-panel__hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #9090a0;
+}
+
+.tap-panel__again {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ececf1;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.tap-panel__again:active {
+  transform: scale(0.99);
+}
+
+.tap-panel__status {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: #9a9aac;
+}
+
+.tap-panel__banner {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  text-align: left;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+  border: 1px solid rgba(255, 200, 120, 0.35);
+  background: rgba(255, 180, 80, 0.1);
+}
+
+.tap-panel__banner-text {
+  margin: 0;
+  flex: 1 1 12rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #e8e0d8;
+}
+
+.tap-panel__banner-dismiss {
+  flex-shrink: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.tap-panel__today-mode {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 90, 90, 0.4);
+  background: rgba(255, 60, 60, 0.08);
+  text-align: left;
+}
+
+.tap-panel__today-mode-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9090a4;
+}
+
+.tap-panel__today-mode-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.tap-panel__today-mode-desc {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #a8a8bc;
+}
+
+.tap-panel__today-mode-desc code {
+  font-size: 0.75rem;
+  word-break: break-all;
+}
+
+.tap-panel__status--endless {
+  color: #8ec8a8;
+}
+
+.tap-panel__sub-box {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.tap-panel__sub-text {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #9a9aac;
+}
+
+.tap-panel__sub-cta {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 200, 255, 0.35);
+  background: rgba(80, 140, 200, 0.15);
+  color: #c8e4ff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.tap-panel__sub-cta--on {
+  border-color: rgba(120, 255, 180, 0.45);
+  background: rgba(80, 200, 120, 0.18);
+  color: #d0ffe8;
+}
