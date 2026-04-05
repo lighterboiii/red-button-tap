@@ -1,10 +1,11 @@
 import { API_BASE } from '@shared/config/env';
 import type {
+  BattleCommitResponse,
   BattleOpponentResponse,
-  BattleOutcome,
   CombatPreviewResponse,
   EnemyProfile,
 } from '@entities/combat';
+import type { ProgressionSnapshot, PlayerProgressionPayload } from '@entities/progression';
 import type { TapResult } from '@entities/outcome';
 import type { GearItem, GearSlot } from '@entities/gear';
 import { getTelegramInitData } from '@shared/lib/telegramInitData';
@@ -66,11 +67,37 @@ export async function postCombatPreview(
   return JSON.parse(text) as CombatPreviewResponse;
 }
 
+export async function postProgressionSync(body: {
+  progression: PlayerProgressionPayload;
+}): Promise<ProgressionSnapshot> {
+  const res = await fetch(url('/api/progression/sync'), {
+    method: 'POST',
+    headers: telegramHeaders(),
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`Ошибка API ${res.status}`);
+  return JSON.parse(text) as ProgressionSnapshot;
+}
+
+export async function postProgressionTapTake(body: {
+  progression: PlayerProgressionPayload;
+}): Promise<ProgressionSnapshot> {
+  const res = await fetch(url('/api/progression/tap-take'), {
+    method: 'POST',
+    headers: telegramHeaders(),
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`Ошибка API ${res.status}`);
+  return JSON.parse(text) as ProgressionSnapshot;
+}
+
 export async function postBattleOpponent(body: {
   battleKind: 'random' | 'spar';
   equipped: Record<GearSlot, GearItem | null>;
   critChanceFromTaps: number;
-  level: number;
+  progression: PlayerProgressionPayload;
 }): Promise<BattleOpponentResponse> {
   const res = await fetch(url('/api/battle/opponent'), {
     method: 'POST',
@@ -96,8 +123,8 @@ export async function postBattle(body: {
   equipped: Record<GearSlot, GearItem | null>;
   critChanceFromTaps: number;
   enemy: EnemyProfile;
-  level: number;
-}): Promise<{ outcome: BattleOutcome }> {
+  progression: PlayerProgressionPayload;
+}): Promise<BattleCommitResponse> {
   const res = await fetch(url('/api/battle'), {
     method: 'POST',
     headers: telegramHeaders(),
@@ -114,5 +141,5 @@ export async function postBattle(body: {
     }
     throw new Error(`Ошибка API ${res.status}${detail}`);
   }
-  return JSON.parse(text) as { outcome: BattleOutcome };
+  return JSON.parse(text) as BattleCommitResponse;
 }

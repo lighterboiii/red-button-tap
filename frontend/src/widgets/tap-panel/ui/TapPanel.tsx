@@ -9,8 +9,8 @@ function outcomeClass(rarity: TapResult['rarity']) {
 }
 
 type Props = {
-  /** Добавить выпавшую вещь в инвентарь */
-  onTakeDrop: (result: TapResult) => void;
+  /** Добавить выпавшую вещь в инвентарь (может быть async — опыт с сервера) */
+  onTakeDrop: (result: TapResult) => void | Promise<void>;
   /** Закрыть экран без сохранения вещи */
   onSkipDrop: () => void;
   /** Рюкзак заполнен — «Взять» недоступно */
@@ -30,10 +30,14 @@ export function TapPanel({ onTakeDrop, onSkipDrop, inventoryFull }: Props) {
     session.rationed && session.blockReason === 'cooldown' && session.cooldownMsLeft > 0;
   const showLimitDaily = session.rationed && session.blockReason === 'daily_limit';
 
-  const handleTake = () => {
+  const handleTake = async () => {
     if (inventoryFull || !result) return;
-    onTakeDrop(result);
-    reset();
+    try {
+      await onTakeDrop(result);
+      reset();
+    } catch {
+      /* прогрессия не применилась — экран дропа остаётся */
+    }
   };
 
   const handleSkip = () => {

@@ -1,4 +1,5 @@
 export type {
+  BattleCommitResponse,
   BattleIntroState,
   BattleKind,
   BattleLogFragment,

@@ -6,7 +6,14 @@ import { rollDrop, SLOT_LABEL_RU } from './drops.js';
 import { telegramAuthMiddleware } from './telegramMiddleware.js';
 import { computeCombatStats, computeItemStatsMap } from './combat/computeStats.js';
 import { TOTAL_CRIT_CAP } from './combat/constants.js';
-import { clampPlayerLevel, playerMaxHpFromLevel } from './combat/progression.js';
+import {
+  applyBattleXp,
+  parseProgression,
+  progressionFromRequestBody,
+  progressionSnapshot,
+  applyTapTakeXp,
+  playerMaxHpFromLevel,
+} from './combat/progression.js';
 import {
   isSparEnemy,
   isValidRandomEnemy,
@@ -80,6 +87,28 @@ app.post('/api/tap', telegramAuthMiddleware, (_req, res) => {
   });
 });
 
+/** Нормализация и xpToNext / maxHp — только сервер */
+app.post('/api/progression/sync', telegramAuthMiddleware, (req, res) => {
+  try {
+    const p = parseProgression(req.body?.progression);
+    res.json(progressionSnapshot(p));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'progression_sync_failed' });
+  }
+});
+
+/** Опыт за взятие дропа с тапа (лимит на день — по serverDayKey) */
+app.post('/api/progression/tap-take', telegramAuthMiddleware, (req, res) => {
+  try {
+    const p = applyTapTakeXp(req.body?.progression);
+    res.json(progressionSnapshot(p));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'progression_tap_take_failed' });
+  }
+});
+
 /** Сводка статов и вкладов по вещам — расчёт на сервере */
 app.post('/api/combat/preview', telegramAuthMiddleware, (req, res) => {
   try {
@@ -128,11 +157,11 @@ app.post('/api/battle/opponent', telegramAuthMiddleware, (req, res) => {
       }
     }
 
-    const level = clampPlayerLevel(req.body?.level);
-    const playerHp = playerMaxHpFromLevel(level);
+    const p = progressionFromRequestBody(req.body);
+    const playerHp = playerMaxHpFromLevel(p.level);
     const enemy = battleKind === 'spar' ? { ...SPAR_OPPONENT } : rollEnemy();
 
-    res.json({ enemy, playerHp, level });
+    res.json({ enemy, playerHp, ...progressionSnapshot(p) });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'opponent_failed' });
@@ -177,12 +206,13 @@ app.post('/api/battle', telegramAuthMiddleware, (req, res) => {
       return res.status(400).json({ error: 'enemy_mismatch' });
     }
 
-    const level = clampPlayerLevel(req.body?.level);
-    const playerHp = playerMaxHpFromLevel(level);
+    const pBefore = progressionFromRequestBody(req.body);
+    const playerHp = playerMaxHpFromLevel(pBefore.level);
     const stats = computeCombatStats(equipped);
     const outcome = resolveBattleWithEnemy(stats, critChanceFromTaps, enemy, battleKind, playerHp);
+    const pAfter = applyBattleXp(pBefore, outcome.won, battleKind);
 
-    res.json({ outcome });
+    res.json({ outcome, ...progressionSnapshot(pAfter) });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'battle_failed' });

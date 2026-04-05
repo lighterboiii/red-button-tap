@@ -1,3 +1,5 @@
+import type { ProgressionSnapshot } from '@entities/progression';
+
 export type EnemyProfile = {
   name: string;
   hp: number;
@@ -35,6 +37,11 @@ export type BattleOutcome = {
   battleKind: BattleKind;
 };
 
+/** Ответ POST /api/battle — исход боя + прогрессия с сервера */
+export type BattleCommitResponse = ProgressionSnapshot & {
+  outcome: BattleOutcome;
+};
+
 export type ItemCombatStats = {
   attack: number;
   defense: number;
@@ -55,10 +62,9 @@ export type CombatPreviewResponse = {
 };
 
 /** Ответ POST /api/battle/opponent */
-export type BattleOpponentResponse = {
+export type BattleOpponentResponse = ProgressionSnapshot & {
   enemy: EnemyProfile;
   playerHp: number;
-  level?: number;
 };
 
 /** Экран «встреча» перед боем */
