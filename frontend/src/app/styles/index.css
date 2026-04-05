@@ -227,88 +227,11 @@ body {
   width: 100%;
 }
 
-.gear-slot-strip__cell-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
+.gear-slot-strip__cell {
   min-width: 0;
-}
-
-.gear-slot-strip__square {
-  width: 100%;
-  aspect-ratio: 1;
-  max-height: 4.25rem;
-  border-radius: 10px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 0.15rem;
-  border: 2px dashed rgba(255, 255, 255, 0.18);
-  background: rgba(0, 0, 0, 0.15);
-}
-
-.gear-slot-strip__square--empty {
-  color: #5a5a6c;
-}
-
-.gear-slot-strip__square--common {
-  border-style: solid;
-  border-color: rgba(180, 180, 190, 0.45);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.gear-slot-strip__square--uncommon {
-  border-style: solid;
-  border-color: rgba(100, 180, 255, 0.5);
-  background: rgba(80, 160, 255, 0.1);
-}
-
-.gear-slot-strip__square--rare {
-  border-style: solid;
-  border-color: rgba(200, 140, 255, 0.55);
-  background: rgba(180, 100, 255, 0.12);
-}
-
-.gear-slot-strip__square--legendary {
-  border-style: solid;
-  border-color: rgba(255, 200, 120, 0.6);
-  background: rgba(255, 180, 80, 0.12);
-}
-
-.gear-slot-strip__abbr {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: #c8c8d8;
-}
-
-.gear-slot-strip__square--empty .gear-slot-strip__abbr {
-  color: #6a6a78;
-}
-
-.gear-slot-strip__dur {
-  font-size: 0.58rem;
-  font-variant-numeric: tabular-nums;
-  color: #a0a0b4;
-}
-
-.gear-slot-strip__vacant {
-  font-size: 0.75rem;
-  opacity: 0.5;
-}
-
-.gear-slot-strip__caption {
-  font-size: 0.58rem;
-  line-height: 1.15;
-  text-align: center;
-  color: #8a8a9c;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  align-items: center;
 }
 
 .character-panel {
@@ -331,18 +254,6 @@ body {
   display: flex;
   justify-content: center;
   margin-bottom: 0.75rem;
-}
-
-.character-panel__stats-legend {
-  margin: 0 0 0.55rem;
-  font-size: 0.72rem;
-  line-height: 1.45;
-  color: #8a8a9c;
-}
-
-.character-panel__stats-legend strong {
-  color: #b8b8cc;
-  font-weight: 600;
 }
 
 .character-panel__stats {
@@ -422,53 +333,17 @@ body {
   list-style: none;
   margin: 0 0 0.75rem;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.35rem;
+  width: 100%;
 }
 
 .character-panel__slot {
-  display: grid;
-  grid-template-columns: 5rem 1fr;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.82rem;
-}
-
-.character-panel__slot-name {
-  color: #8a8a9c;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.character-panel__empty {
-  color: #5a5a6c;
-  font-style: italic;
-}
-
-.character-panel__item {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.28rem;
-  width: 100%;
-  padding: 0.45rem 0.55rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  color: #ececf1;
-  font-size: 0.82rem;
-  cursor: pointer;
-  text-align: left;
-}
-
-.character-panel__item-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.35rem;
-  width: 100%;
 }
 
 .character-panel__item-combat {
@@ -480,29 +355,117 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.character-panel__item--common {
-  border-color: rgba(180, 180, 190, 0.25);
+/** Плитка экипировки: вкладка «Кнопка» и «Персонаж» */
+.equip-tile {
+  position: relative;
+  width: 3.75rem;
+  height: 3.75rem;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ececf1;
+  flex-shrink: 0;
 }
 
-.character-panel__item--uncommon {
-  border-color: rgba(100, 180, 255, 0.35);
-  background: rgba(80, 160, 255, 0.08);
+button.equip-tile {
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
 }
 
-.character-panel__item--rare {
-  border-color: rgba(200, 140, 255, 0.4);
-  background: rgba(180, 100, 255, 0.1);
+.equip-tile--vacant {
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.12);
+  cursor: default;
 }
 
-.character-panel__item--legendary {
-  border-color: rgba(255, 200, 120, 0.45);
-  background: rgba(255, 180, 80, 0.1);
-}
-
-.character-panel__dur {
+.equip-tile__atk {
+  position: absolute;
+  bottom: 0.2rem;
+  left: 0.28rem;
+  font-size: 0.58rem;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: #a0a0b4;
-  font-size: 0.75rem;
+  color: #f0b870;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.equip-tile__crit {
+  position: absolute;
+  top: 0.18rem;
+  right: 0.22rem;
+  max-width: 2.1rem;
+  font-size: 0.48rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #d8b0f0;
+  line-height: 1.05;
+  text-align: right;
+  letter-spacing: -0.03em;
+}
+
+.equip-tile__def {
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.26rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #88c8e8;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.equip-tile__dur {
+  position: absolute;
+  top: 0.16rem;
+  left: 0.22rem;
+  font-size: 0.46rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #9090a8;
+  line-height: 1;
+}
+
+.equip-tile__icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  font-size: 1.28rem;
+  line-height: 1;
+  opacity: 0.88;
+  filter: grayscale(0.15);
+  pointer-events: none;
+  user-select: none;
+}
+
+.equip-tile__icon--muted {
+  opacity: 0.4;
+  filter: grayscale(0.4);
+}
+
+.equip-tile--common {
+  border-color: rgba(180, 180, 190, 0.28);
+}
+
+.equip-tile--uncommon {
+  border-color: rgba(100, 180, 255, 0.42);
+  background: rgba(80, 160, 255, 0.09);
+}
+
+.equip-tile--rare {
+  border-color: rgba(200, 140, 255, 0.48);
+  background: rgba(180, 100, 255, 0.11);
+}
+
+.equip-tile--legendary {
+  border-color: rgba(255, 200, 120, 0.52);
+  background: rgba(255, 180, 80, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 200, 100, 0.08);
 }
 
 .character-panel__hint,
@@ -550,13 +513,6 @@ body {
 .character-panel__battle-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-}
-
-.character-panel__battle-hint {
-  margin: 0;
-  font-size: 0.68rem;
-  line-height: 1.4;
-  color: #7a7a8c;
 }
 
 .character-panel__battle-overlay--intro {

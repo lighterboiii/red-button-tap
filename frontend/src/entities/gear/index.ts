@@ -6,3 +6,5 @@ export {
   type GearItem,
   type GearDrop,
 } from './model/types';
+
+export { SLOT_TILE_GLYPH, critPctShort } from './model/slotTile';

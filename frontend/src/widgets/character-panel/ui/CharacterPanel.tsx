@@ -8,6 +8,7 @@ import type {
   ItemCombatStats,
 } from '@entities/combat';
 import { GEAR_SLOTS, GEAR_SLOT_LABELS, type GearItem, type GearSlot } from '@entities/gear';
+import { EquipTile } from '@widgets/gear-equip-tile';
 
 /** Пауза перед первой строкой журнала — «заводится» бой */
 const BATTLE_LOG_FIRST_MS = 480;
@@ -202,10 +203,6 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
         )}
       </div>
 
-      <p className="character-panel__stats-legend">
-        Цифры внизу — сумма по <strong>надетым</strong> вещам. На каждой вещи в инвентаре и в слотах указан её
-        вклад.
-      </p>
       <dl className="character-panel__stats" aria-label="Боевые характеристики">
         <div className="character-panel__stat">
           <dt>Атака</dt>
@@ -232,35 +229,13 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
           const itemStats = item ? itemStatsById[item.id] ?? null : null;
           return (
             <li key={slot} className="character-panel__slot">
-              <span className="character-panel__slot-name">{GEAR_SLOT_LABELS[slot]}</span>
-              {item ? (
-                <button
-                  type="button"
-                  className={`character-panel__item character-panel__item--${item.rarity}`}
-                  onClick={() => unequip(slot)}
-                  title={
-                    itemStats
-                      ? `Снять · Атк ${itemStats.attack} / Защ ${itemStats.defense} / Крит ${formatCritPct(itemStats.critChance)}`
-                      : 'Снять'
-                  }
-                >
-                  <span className="character-panel__item-top">
-                    <span className="character-panel__item-label">{item.label}</span>
-                    <span className="character-panel__dur">
-                      {item.durability}/{item.maxDurability}
-                    </span>
-                  </span>
-                  {itemStats ? (
-                    <ItemCombatLine stats={itemStats} />
-                  ) : (
-                    <span className="character-panel__item-combat" aria-hidden>
-                      …
-                    </span>
-                  )}
-                </button>
-              ) : (
-                <span className="character-panel__empty">—</span>
-              )}
+              <EquipTile
+                slot={slot}
+                item={item}
+                stats={itemStats}
+                interactive
+                onUnequip={() => unequip(slot)}
+              />
             </li>
           );
         })}
@@ -285,9 +260,6 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
             {battlePreparing && !battleIntro ? '…' : 'Тренировка'}
           </button>
         </div>
-        <p className="character-panel__battle-hint">
-          Тренировка — бой с манекеном, экипировка не трескается. Случайный бой — настоящий враг и износ вещей.
-        </p>
       </div>
 
       {battleIntro ? (
