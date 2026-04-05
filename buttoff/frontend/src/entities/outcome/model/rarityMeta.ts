@@ -1,12 +1,12 @@
-import type { Rarity } from './types';
+import type { Rarity } from './rarity';
 
 /** Для UI: цвет и подпись — игрок видит, что «верх» редкий. */
 export const RARITY_META: Record<
   Rarity,
   { title: string; hint: string }
 > = {
-  common: { title: 'Обычное', hint: 'Чаще всего — без сюрприза, так и задумано.' },
-  uncommon: { title: 'Необычное', hint: 'Попадается иногда — маленький плюс.' },
-  rare: { title: 'Редкое', hint: 'Редко. Если выпало — ты заметил.' },
-  legendary: { title: 'Легендарное', hint: 'Очень редко. Шанс копеечный.' },
+  common: { title: '', hint: '' },
+  uncommon: { title: 'Необычное', hint: 'Выпало обычное' },
+  rare: { title: 'Редкое', hint: 'Редкое, поздравляем!' },
+  legendary: { title: 'Легендарное', hint: 'Ты нашёл легенду!' },
 };

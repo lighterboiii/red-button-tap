@@ -1,6 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { rollTap } from './rng.js';
+import { rollDrop } from './drops.js';
+import { telegramAuthMiddleware } from './telegramMiddleware.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -12,14 +15,35 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/api/tap', (_req, res) => {
+/** Профиль из Telegram после проверки initData (в браузере без бота — user: null) */
+app.get('/api/me', telegramAuthMiddleware, (req, res) => {
+  const u = req.telegramUser;
+  res.json({
+    ok: true,
+    telegram: Boolean(process.env.TELEGRAM_BOT_TOKEN),
+    user: u
+      ? {
+          id: u.id,
+          first_name: u.first_name,
+          last_name: u.last_name,
+          username: u.username,
+          photo_url: u.photo_url,
+        }
+      : null,
+  });
+});
+
+app.post('/api/tap', telegramAuthMiddleware, (_req, res) => {
   const result = rollTap();
+  const drop = rollDrop(result.rarity);
+
   res.json({
     id: result.id,
     rarity: result.rarity,
     label: result.label,
     message: result.message,
     approximateChance: result.approximateChance,
+    drop,
   });
 });
 

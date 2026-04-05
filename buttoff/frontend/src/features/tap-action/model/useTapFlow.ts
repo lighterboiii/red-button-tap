@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
+import type { TapResult } from '@entities/outcome';
 import { TAP_COOLDOWN_MS } from '@entities/tap-rules';
 import { useTapSession } from '@features/tap-session/model/useTapSession';
 import { useTapOutcome } from './useTapOutcome';
 
 /**
  * Ручной тап + лимит/кулдаун; при subscriptionStub — по истечении кулдауна срабатывает авто-тап (заглушка).
+ * onSuccessfulTap — после ответа API (дроп в инвентарь и т.п.).
  */
-export function useTapFlow() {
+export function useTapFlow(onSuccessfulTap?: (result: TapResult) => void) {
   const session = useTapSession();
   const { phase, result, error, tap, reset } = useTapOutcome();
 
@@ -21,10 +23,13 @@ export function useTapFlow() {
   const runTap = useCallback(async (): Promise<boolean> => {
     if (phaseRef.current === 'rolling') return false;
     if (!endlessRef.current && !canTapRef.current) return false;
-    const ok = await tap();
-    if (ok && !endlessRef.current) session.recordTapCommitted();
-    return ok;
-  }, [tap, session.recordTapCommitted]);
+    const out = await tap();
+    if (out) {
+      if (!endlessRef.current) session.recordTapCommitted();
+      onSuccessfulTap?.(out);
+    }
+    return !!out;
+  }, [tap, session.recordTapCommitted, onSuccessfulTap]);
 
   const manualTap = useCallback(async () => {
     await runTap();

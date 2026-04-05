@@ -1,3 +1,4 @@
+import { GEAR_SLOT_LABELS } from '@entities/gear';
 import { RARITY_META } from '@entities/outcome';
 import type { TapResult } from '@entities/outcome';
 import { TapButton, useTapFlow } from '@features/tap-action';
@@ -7,8 +8,12 @@ function outcomeClass(rarity: TapResult['rarity']) {
   return `tap-panel__outcome tap-panel__outcome--${rarity}`;
 }
 
-export function TapPanel() {
-  const { phase, result, error, reset, manualTap, session } = useTapFlow();
+type Props = {
+  onSuccessfulTap?: (result: TapResult) => void;
+};
+
+export function TapPanel({ onSuccessfulTap }: Props) {
+  const { phase, result, error, reset, manualTap, session } = useTapFlow(onSuccessfulTap);
   const rolling = phase === 'rolling';
   const showResult = phase === 'done' && result;
   const mustResetBeforeNext = phase === 'done' && result != null;
@@ -58,6 +63,9 @@ export function TapPanel() {
           </div>
           <h2 className="tap-panel__label">{result.label}</h2>
           <p className="tap-panel__message">{result.message}</p>
+          <p className="tap-panel__drop">
+            + Лут: {GEAR_SLOT_LABELS[result.drop.slot]} — «{result.drop.label}»
+          </p>
           <p className="tap-panel__hint">{RARITY_META[result.rarity].hint}</p>
           <button type="button" className="tap-panel__again" onClick={reset}>
             Ещё раз

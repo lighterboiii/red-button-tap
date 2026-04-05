@@ -11,7 +11,17 @@ function pickRarity() {
   return 'common';
 }
 
+/** common: c1/c2 чаще, «тишина» c3 — реже. */
+function pickCommonCard() {
+  const [c1, c2, c3] = POOLS.common;
+  const r = Math.random();
+  if (r < 0.42) return c1;
+  if (r < 0.84) return c2;
+  return c3;
+}
+
 function pickFromPool(rarity) {
+  if (rarity === 'common') return pickCommonCard();
   const pool = POOLS[rarity];
   return pool[Math.floor(Math.random() * pool.length)];
 }

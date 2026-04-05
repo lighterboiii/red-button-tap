@@ -9,8 +9,8 @@ export function useTapOutcome() {
   const [result, setResult] = useState<TapResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  /** true — запрос прошёл, false — ошибка сети/API */
-  const tap = useCallback(async (): Promise<boolean> => {
+  /** Успешный ответ API или null при ошибке */
+  const tap = useCallback(async (): Promise<TapResult | null> => {
     setError(null);
     setPhase('rolling');
     setResult(null);
@@ -18,11 +18,11 @@ export function useTapOutcome() {
       const [out] = await Promise.all([postTap(), delay(380)]);
       setResult(out);
       setPhase('done');
-      return true;
+      return out;
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка сети');
       setPhase('error');
-      return false;
+      return null;
     }
   }, []);
 

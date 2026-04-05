@@ -6,27 +6,567 @@
 
 html {
   -webkit-tap-highlight-color: transparent;
+  height: 100%;
 }
 
 body {
   margin: 0;
+  min-height: 100%;
   min-height: 100dvh;
+  width: 100%;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   background: radial-gradient(120% 80% at 50% 0%, #1a1a22 0%, #0f0f12 55%);
   color: #ececf1;
 }
 
 #root {
+  min-height: 100%;
   min-height: 100dvh;
+  width: 100%;
+}
+
+:root {
+  /* высота фиксированной полосы «Кнопка / Персонаж» + safe area */
+  --gear-tab-bar: calc(3.35rem + max(10px, env(safe-area-inset-bottom)));
 }
 
 .home-page {
   min-height: 100dvh;
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
-    max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  min-height: 100svh;
+  max-height: 100dvh;
+  max-height: 100svh;
+  width: 100%;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 0
+    max(12px, env(safe-area-inset-left));
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+.home-page__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* чтобы тап и карточка не уезжали под фиксированные вкладки */
+  padding-bottom: var(--gear-tab-bar);
+}
+
+.home-page__tap {
+  width: 100%;
+  max-width: 30rem;
+  flex: 0 0 auto;
+}
+
+/* Режим «Персонаж»: полный экран на мобилке (fixed + safe-area), без max-width */
+.home-page--character {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  min-height: 100dvh;
+  min-height: 100svh;
+  height: 100dvh;
+  height: 100svh;
+  max-width: none;
+}
+
+.home-page--character .gear-dock {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  flex: none;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page--character .gear-dock__content {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+  padding-bottom: var(--gear-tab-bar);
+  border: none;
+  background: #0f0f12;
+}
+
+.home-page--character .gear-dock__panel--character {
+  flex: 0 1 auto;
+  width: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-right: max(4px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.home-page--character .gear-dock__panel--character .character-panel {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.home-page--character .gear-dock__tabs {
+  max-width: none;
+}
+
+/* Нижняя зона: контент над фиксированной переключалкой у края экрана */
+.gear-dock {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.gear-dock--character-full {
+  min-height: 0;
+}
+
+.gear-dock__content {
+  padding: 0.5rem 0.75rem 0;
+  padding-bottom: var(--gear-tab-bar);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(15, 15, 18, 0.92) 0%, rgba(15, 15, 18, 0.75) 100%);
+  backdrop-filter: blur(10px);
+}
+
+.gear-dock__tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  width: 100%;
+  max-width: none;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.45rem max(0.75rem, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-bottom, 0px))
+    max(0.75rem, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(12, 12, 15, 0.98) 0%, #0a0a0d 100%);
+  backdrop-filter: blur(14px);
+}
+
+.gear-dock__tab {
+  flex: 1;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #a0a0b4;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gear-dock__tab--active {
+  border-color: rgba(255, 100, 90, 0.45);
+  background: rgba(255, 80, 70, 0.12);
+  color: #ececf1;
+}
+
+.gear-dock__panel {
+  min-height: 0;
+}
+
+.gear-dock__panel--slots {
+  padding: 0.15rem 0 0.25rem;
+}
+
+.gear-dock__panel--character {
+  max-height: min(42vh, 20rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 2px;
+}
+
+.gear-dock__panel--character .character-panel {
+  border: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.gear-dock__hint {
+  margin: 0 0 0.6rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #7a7a8c;
+}
+
+.gear-slot-strip__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.gear-slot-strip__cell-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.gear-slot-strip__square {
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 4.25rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.gear-slot-strip__square--empty {
+  color: #5a5a6c;
+}
+
+.gear-slot-strip__square--common {
+  border-style: solid;
+  border-color: rgba(180, 180, 190, 0.45);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.gear-slot-strip__square--uncommon {
+  border-style: solid;
+  border-color: rgba(100, 180, 255, 0.5);
+  background: rgba(80, 160, 255, 0.1);
+}
+
+.gear-slot-strip__square--rare {
+  border-style: solid;
+  border-color: rgba(200, 140, 255, 0.55);
+  background: rgba(180, 100, 255, 0.12);
+}
+
+.gear-slot-strip__square--legendary {
+  border-style: solid;
+  border-color: rgba(255, 200, 120, 0.6);
+  background: rgba(255, 180, 80, 0.12);
+}
+
+.gear-slot-strip__abbr {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #c8c8d8;
+}
+
+.gear-slot-strip__square--empty .gear-slot-strip__abbr {
+  color: #6a6a78;
+}
+
+.gear-slot-strip__dur {
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  color: #a0a0b4;
+}
+
+.gear-slot-strip__vacant {
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.gear-slot-strip__caption {
+  font-size: 0.58rem;
+  line-height: 1.15;
+  text-align: center;
+  color: #8a8a9c;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.character-panel {
+  width: 100%;
+  padding: 1rem 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+}
+
+.character-panel__intro {
+  margin: 0 0 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #9a9aac;
+}
+
+.character-panel__figure {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.character-panel__silhouette {
+  width: 5rem;
+  height: 7rem;
+  border-radius: 40% 40% 35% 35%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.character-panel__avatar {
+  width: 5rem;
+  height: 7rem;
+  border-radius: 40% 40% 35% 35%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: block;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.character-panel__slots {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.character-panel__slot {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.character-panel__slot-name {
+  color: #8a8a9c;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.character-panel__empty {
+  color: #5a5a6c;
+  font-style: italic;
+}
+
+.character-panel__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ececf1;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.character-panel__item--common {
+  border-color: rgba(180, 180, 190, 0.25);
+}
+
+.character-panel__item--uncommon {
+  border-color: rgba(100, 180, 255, 0.35);
+  background: rgba(80, 160, 255, 0.08);
+}
+
+.character-panel__item--rare {
+  border-color: rgba(200, 140, 255, 0.4);
+  background: rgba(180, 100, 255, 0.1);
+}
+
+.character-panel__item--legendary {
+  border-color: rgba(255, 200, 120, 0.45);
+  background: rgba(255, 180, 80, 0.1);
+}
+
+.character-panel__dur {
+  font-variant-numeric: tabular-nums;
+  color: #a0a0b4;
+  font-size: 0.75rem;
+}
+
+.character-panel__hint,
+.character-panel__ready {
+  margin: 0 0 0.65rem;
+  font-size: 0.82rem;
+  color: #a0a0b4;
+}
+
+.character-panel__ready {
+  color: #9cd8a8;
+}
+
+.character-panel__battle {
+  margin-bottom: 1rem;
+}
+
+.character-panel__battle-btn {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 140, 100, 0.45);
+  background: rgba(255, 100, 80, 0.15);
+  color: #ffd0c8;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.character-panel__battle-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.character-panel__battle-note {
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
+  color: #c0a080;
+}
+
+.character-panel__taunt {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 200, 120, 0.3);
+  background: rgba(255, 180, 80, 0.08);
+}
+
+.character-panel__taunt-text {
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #ececf1;
+}
+
+.character-panel__taunt-close {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ececf1;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.character-panel__stash-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9a9aac;
+}
+
+.character-panel__stash-empty {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6a6a7c;
+}
+
+.character-panel__stash-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.character-panel__stash-chip {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.35rem 0.5rem;
+  align-items: baseline;
+  padding: 0.5rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  color: #ececf1;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.character-panel__stash-chip--common {
+  border-color: rgba(180, 180, 190, 0.2);
+}
+
+.character-panel__stash-chip--uncommon {
+  border-color: rgba(100, 180, 255, 0.3);
+}
+
+.character-panel__stash-chip--rare {
+  border-color: rgba(200, 140, 255, 0.35);
+}
+
+.character-panel__stash-chip--legendary {
+  border-color: rgba(255, 200, 120, 0.4);
+}
+
+.character-panel__stash-slot {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a8a9c;
+}
+
+.character-panel__stash-label {
+  grid-column: 2;
+}
+
+.character-panel__stash-meta {
+  grid-column: 3;
+  font-size: 0.7rem;
+  color: #888898;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .character-panel__stash-chip {
+    grid-template-columns: 1fr;
+  }
+
+  .character-panel__stash-meta {
+    grid-column: 1;
+  }
 }
 
 .tap-panel {
@@ -136,21 +676,18 @@ body {
   transform-origin: center center;
 }
 
-/* «Самонажим» каждые 2 с — на отдельном слое, без transition */
+/* Лёгкая пульсация раз в 2 с (без «нажатия») */
 .tap-button:not(:disabled):not(.tap-button--rolling) .tap-button__nudge {
-  animation: tap-invite 2s cubic-bezier(0.36, 0, 0.2, 1) infinite;
+  animation: tap-nudge-pulse 2s ease-in-out infinite;
 }
 
-@keyframes tap-invite {
+@keyframes tap-nudge-pulse {
   0%,
   100% {
-    transform: scale(1) translateY(0);
+    transform: scale(1);
   }
-  8% {
-    transform: scale(0.82) translateY(6px);
-  }
-  16% {
-    transform: scale(1) translateY(0);
+  50% {
+    transform: scale(1.008);
   }
 }
 
@@ -164,13 +701,13 @@ body {
   transition-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
 }
 
-/* Свечение — один ровный пульс */
+/* Свечение — один ровный пульс (красное) */
 .tap-button__glow {
   position: absolute;
   inset: -14%;
   border-radius: 50%;
   z-index: 0;
-  background: radial-gradient(circle, rgba(255, 70, 70, 0.45) 0%, transparent 68%);
+  background: radial-gradient(circle, rgba(255, 45, 45, 0.55) 0%, rgba(200, 20, 20, 0.2) 45%, transparent 68%);
   filter: blur(14px);
   pointer-events: none;
   animation: tap-glow-pulse 2.4s ease-in-out infinite;
@@ -194,12 +731,12 @@ body {
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle at 32% 28%, #ff6a5a 0%, #d42020 42%, #8f0c0c 100%);
+  background: radial-gradient(circle at 32% 28%, #ff3b32 0%, #e01010 38%, #9a0808 72%, #5c0404 100%);
   box-shadow:
-    0 10px 32px rgba(160, 20, 20, 0.42),
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    inset 0 4px 14px rgba(255, 255, 255, 0.2),
-    inset 0 -10px 22px rgba(0, 0, 0, 0.28);
+    0 10px 36px rgba(220, 30, 30, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 4px 14px rgba(255, 200, 200, 0.35),
+    inset 0 -10px 22px rgba(0, 0, 0, 0.35);
 }
 
 .tap-button--rolling .tap-button__glow {
@@ -229,6 +766,7 @@ body {
   .tap-button:not(:disabled):not(.tap-button--rolling) .tap-button__nudge {
     animation: none !important;
   }
+
 }
 
 .tap-panel__rolling {
@@ -307,6 +845,13 @@ body {
   font-size: 0.95rem;
   line-height: 1.45;
   color: #d8d8e4;
+}
+
+.tap-panel__drop {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #9ec8ff;
 }
 
 .tap-panel__hint {

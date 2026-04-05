@@ -1,4 +1,7 @@
-export type Rarity = 'common' | 'uncommon' | 'rare' | 'legendary';
+import type { GearDrop } from '@entities/gear';
+import type { Rarity } from './rarity';
+
+export type { Rarity } from './rarity';
 
 export type TapResult = {
   id: string;
@@ -6,4 +9,6 @@ export type TapResult = {
   label: string;
   message: string;
   approximateChance: number;
+  /** Вещь с тапа (одна на тап, редкость как у исхода) */
+  drop: GearDrop;
 };
