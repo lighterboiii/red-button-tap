@@ -7,7 +7,7 @@
 export const RARITY_WEIGHTS = {
   common: 0.56,
   uncommon: 0.28,
-  rare: 0.13,
+  rare: 0.083,
   legendary: 0.0295,
 };
 

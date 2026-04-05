@@ -1,6 +1,5 @@
 import { type ComponentProps } from 'react';
 import { CharacterPanel } from '@widgets/character-panel';
-import { GearSlotStrip } from './GearSlotStrip';
 
 type Gear = ComponentProps<typeof CharacterPanel>['gear'];
 
@@ -25,9 +24,7 @@ export function GearBottomSection({ gear, tab, onTabChange, avatarUrl, displayNa
           aria-labelledby="gear-tab-slots"
           hidden={tab !== 'slots'}
           className="gear-dock__panel gear-dock__panel--slots"
-        >
-          <GearSlotStrip equipped={gear.equipped} itemStatsById={gear.itemStatsById} />
-        </div>
+        />
 
         <div
           id="gear-panel-character"

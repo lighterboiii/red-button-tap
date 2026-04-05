@@ -14,3 +14,9 @@ export { critPctShort } from './model/slotTile';
 export { SlotTypeIcon } from './ui/SlotTypeIcon';
 
 export { CHARACTER_SLOT_GRID_AREA } from './model/characterEquipGrid';
+export {
+  FORGE_LEGENDARY_PREVIEW,
+  forgePreviewJewelryEffectText,
+  type ForgeLegendaryPreview,
+  type JewelryEffectId,
+} from './model/forgeLegendaryPreview';

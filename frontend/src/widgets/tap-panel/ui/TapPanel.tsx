@@ -1,8 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { RARITY_META } from '@entities/outcome';
 import type { TapResult } from '@entities/outcome';
 import type { ItemCombatStats } from '@entities/combat';
-import { GEAR_SLOT_LABELS, SlotTypeIcon } from '@entities/gear';
+import {
+  critPctShort,
+  FORGE_LEGENDARY_PREVIEW,
+  forgePreviewJewelryEffectText,
+  GEAR_SLOT_LABELS,
+  type ForgeLegendaryPreview,
+  SlotTypeIcon,
+} from '@entities/gear';
 import { TapButton, useTapFlow } from '@features/tap-action';
 import { postCombatItemStats } from '@shared/api/client';
 import { formatCooldownMs } from '@shared/lib/formatCooldown';
@@ -13,6 +21,39 @@ function outcomeClass(rarity: TapResult['rarity']) {
 
 function formatCritPct(crit: number): string {
   return `${(crit * 100).toFixed(1)}%`;
+}
+
+function forgeLegendaryChip(
+  entry: ForgeLegendaryPreview,
+  keySuffix: string,
+  onSelect: (e: ForgeLegendaryPreview) => void,
+) {
+  return (
+    <li key={`${entry.catalogId}${keySuffix}`} className="tap-panel__legendary-chip">
+      <button
+        type="button"
+        className="tap-panel__legendary-chip-hit"
+        onClick={() => onSelect(entry)}
+        aria-label={`Подробнее: ${entry.label}`}
+      >
+        <div className="tap-panel__legendary-chip-tile equip-tile equip-tile--legendary">
+          <span className="equip-tile__atk" aria-hidden>
+            {entry.atkDelta}
+          </span>
+          <span className="equip-tile__crit" aria-hidden>
+            {critPctShort(entry.critDelta)}
+          </span>
+          <span className="equip-tile__def" aria-hidden>
+            {entry.defDelta}
+          </span>
+          <span className="equip-tile__icon">
+            <SlotTypeIcon slot={entry.slot} className="equip-tile__icon-svg" />
+          </span>
+        </div>
+        <span className="tap-panel__legendary-chip-label">{entry.label}</span>
+      </button>
+    </li>
+  );
 }
 
 type Props = {
@@ -40,6 +81,9 @@ export function TapPanel({
   const mustResetBeforeNext = phase === 'done' && result != null;
 
   const [dropStats, setDropStats] = useState<ItemCombatStats | null>(null);
+  const [legendaryDetail, setLegendaryDetail] = useState<ForgeLegendaryPreview | null>(null);
+  const [legendaryPreviewStats, setLegendaryPreviewStats] = useState<ItemCombatStats | null>(null);
+  const forgeDetailTitleId = useId();
 
   useEffect(() => {
     if (!result) {
@@ -65,6 +109,39 @@ export function TapPanel({
     };
   }, [result?.id, result?.drop.slot, result?.rarity]);
 
+  useEffect(() => {
+    if (!legendaryDetail) {
+      setLegendaryPreviewStats(null);
+      return;
+    }
+    let cancelled = false;
+    setLegendaryPreviewStats(null);
+    void (async () => {
+      try {
+        const s = await postCombatItemStats({
+          catalogId: legendaryDetail.catalogId,
+          slot: legendaryDetail.slot,
+          rarity: 'legendary',
+        });
+        if (!cancelled) setLegendaryPreviewStats(s);
+      } catch {
+        if (!cancelled) setLegendaryPreviewStats(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [legendaryDetail?.catalogId, legendaryDetail?.slot]);
+
+  useEffect(() => {
+    if (!legendaryDetail) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLegendaryDetail(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [legendaryDetail]);
+
   const buttonDisabled =
     rolling || mustResetBeforeNext || (!session.endless && !session.canTap);
 
@@ -73,6 +150,9 @@ export function TapPanel({
   const showLimitDaily = session.rationed && session.blockReason === 'daily_limit';
 
   const equipAllowed = Boolean(result && canEquipTapDrop(result));
+
+  const forgeJewelryEffectLine =
+    legendaryDetail != null ? forgePreviewJewelryEffectText(legendaryDetail) : null;
 
   const handleTake = async () => {
     if (inventoryFull || !result) return;
@@ -103,10 +183,23 @@ export function TapPanel({
     <section className="tap-panel" aria-label="Кузня">
       <h1 className="tap-panel__sr-only">Кузня</h1>
 
-      <p className="tap-panel__forge-hint">
-        Направь волю на невидимую кузню: каждое касание подпитывает пламя, пока облик вещи не выйдет из
-        пустоты. Не жди знака — металл сам назовёт час.
-      </p>
+      <div className="tap-panel__legendary-preview">
+        <p className="tap-panel__legendary-preview-title" id="tap-panel-legendary-preview-h">
+          Наметки легендарного пламени
+        </p>
+        <div className="tap-panel__legendary-marquee" aria-labelledby="tap-panel-legendary-preview-h">
+          <div className="tap-panel__legendary-marquee-viewport">
+            <div className="tap-panel__legendary-marquee-track">
+              <ul className="tap-panel__legendary-scroll">
+                {FORGE_LEGENDARY_PREVIEW.map((entry) => forgeLegendaryChip(entry, '', setLegendaryDetail))}
+              </ul>
+              <ul className="tap-panel__legendary-scroll tap-panel__legendary-scroll--duplicate" aria-hidden>
+                {FORGE_LEGENDARY_PREVIEW.map((entry) => forgeLegendaryChip(entry, '-dup', setLegendaryDetail))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="tap-panel__button-wrap">
         <TapButton disabled={buttonDisabled} rolling={rolling} onTap={manualTap} />
@@ -206,6 +299,66 @@ export function TapPanel({
           …
         </p>
       ) : null}
+
+      <p className="tap-panel__forge-hint">
+        Направь волю на невидимую кузню: каждое касание подпитывает пламя, пока из недр пустоты не проявится
+        облик вещи.
+      </p>
+
+      {legendaryDetail
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                className="character-panel__item-detail-backdrop"
+                aria-label="Закрыть"
+                onClick={() => setLegendaryDetail(null)}
+              />
+              <div
+                className="character-panel__item-detail character-panel__item-detail--legendary"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={forgeDetailTitleId}
+              >
+                <h3 id={forgeDetailTitleId} className="character-panel__item-detail-name">
+                  {legendaryDetail.label}
+                </h3>
+                <p className="character-panel__item-detail-rarity">{RARITY_META.legendary.title}</p>
+                <dl className="character-panel__item-detail-dl">
+                  <div>
+                    <dt>Слот</dt>
+                    <dd>{GEAR_SLOT_LABELS[legendaryDetail.slot]}</dd>
+                  </div>
+                  <div>
+                    <dt>Атака</dt>
+                    <dd>{legendaryPreviewStats ? legendaryPreviewStats.attack : '…'}</dd>
+                  </div>
+                  <div>
+                    <dt>Защита</dt>
+                    <dd>{legendaryPreviewStats ? legendaryPreviewStats.defense : '…'}</dd>
+                  </div>
+                  <div>
+                    <dt>Крит</dt>
+                    <dd>{legendaryPreviewStats ? formatCritPct(legendaryPreviewStats.critChance) : '…'}</dd>
+                  </div>
+                </dl>
+                {forgeJewelryEffectLine ? (
+                  <p className="tap-panel__forge-preview-effect">{forgeJewelryEffectLine}</p>
+                ) : null}
+                <div className="tap-panel__forge-detail-actions character-panel__item-detail-actions">
+                  <button
+                    type="button"
+                    className="character-panel__item-detail-close"
+                    onClick={() => setLegendaryDetail(null)}
+                  >
+                    Закрыть
+                  </button>
+                </div>
+              </div>
+            </>,
+            document.body,
+          )
+        : null}
     </section>
   );
 }

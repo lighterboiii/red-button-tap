@@ -67,8 +67,6 @@ button,
   max-height: 100dvh;
   max-height: 100svh;
   width: 100%;
-  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 0
-    max(12px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -224,7 +222,6 @@ button,
   padding: 0.45rem max(0.75rem, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-bottom, 0px))
     max(0.75rem, env(safe-area-inset-right, 0px));
   box-sizing: border-box;
-  border-top: 1px solid var(--fantasy-border);
   background: linear-gradient(180deg, rgba(14, 11, 20, 0.98) 0%, #06040a 100%);
   backdrop-filter: blur(14px);
 }
@@ -253,7 +250,8 @@ button,
 }
 
 .gear-dock__panel--slots {
-  padding: 0.15rem 0 0.25rem;
+  padding: 0;
+  min-height: 0;
 }
 
 .gear-dock__panel--character {
@@ -269,30 +267,6 @@ button,
   padding: 0;
   border-radius: 0;
   box-shadow: none;
-}
-
-.gear-dock__hint {
-  margin: 0 0 0.6rem;
-  font-size: 0.72rem;
-  line-height: 1.35;
-  color: #7a7a8c;
-}
-
-.gear-slot-strip__grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.35rem;
-  width: 100%;
-}
-
-.gear-slot-strip__cell {
-  min-width: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .character-panel {
@@ -1547,6 +1521,10 @@ button.equip-tile {
   border-color: rgba(255, 200, 120, 0.5);
 }
 
+.tap-panel__forge-detail-actions.character-panel__item-detail-actions {
+  grid-template-columns: 1fr;
+}
+
 .tap-panel {
   width: 100%;
   max-width: 28rem;
@@ -1565,21 +1543,147 @@ button.equip-tile {
   border: 0;
 }
 
+/* Легендарки над кнопкой — бесконечный горизонтальный маркиз + статы из каталога */
+.tap-panel__legendary-preview {
+  margin: 0 auto 0.85rem;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.tap-panel__legendary-preview-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e85a32;
+  text-shadow:
+    0 0 18px rgba(255, 100, 50, 0.55),
+    0 0 42px rgba(255, 60, 30, 0.2),
+    0 1px 0 rgba(40, 12, 6, 0.95);
+}
+
+.tap-panel__legendary-marquee-viewport {
+  overflow: hidden;
+  width: 100%;
+  padding: 0.15rem 0 0.4rem;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+}
+
+.tap-panel__legendary-marquee-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: max-content;
+  animation: tap-legendary-marquee 68s linear infinite;
+}
+
+.tap-panel__legendary-scroll {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.45rem;
+}
+
+/* Как плитка инвентаря: углы — атк / крит / защ, иконка по центру; подпись снизу */
+.tap-panel__legendary-chip {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.32rem;
+  width: 3.85rem;
+}
+
+.tap-panel__legendary-chip-tile.equip-tile {
+  flex-shrink: 0;
+}
+
+.tap-panel__legendary-chip-hit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.32rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  border-radius: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tap-panel__legendary-chip-hit:focus-visible {
+  outline: 2px solid rgba(255, 200, 120, 0.65);
+  outline-offset: 3px;
+}
+
+.tap-panel__legendary-chip-hit:active .tap-panel__legendary-chip-tile {
+  transform: scale(0.97);
+}
+
+.tap-panel__legendary-chip-tile {
+  transition: transform 0.08s ease;
+}
+
+.tap-panel__forge-preview-effect {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  text-align: left;
+  color: rgba(230, 210, 185, 0.92);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 200, 120, 0.2);
+}
+
+.tap-panel__legendary-chip-label {
+  font-size: 0.54rem;
+  line-height: 1.2;
+  font-weight: 600;
+  color: rgba(230, 215, 190, 0.82);
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 4.25rem;
+}
+
 .tap-panel__forge-hint {
-  margin: 0 auto 1rem;
+  margin: 2.35rem auto 1rem;
   max-width: 22rem;
-  padding: 0 0.5rem;
+  padding: 0 0.75rem;
   font-size: 0.78rem;
   line-height: 1.45;
   font-style: italic;
-  color: rgba(200, 198, 220, 0.82);
+  color: rgba(255, 195, 155, 0.82);
   text-wrap: balance;
+  text-shadow: 0 0 20px rgba(255, 90, 40, 0.18);
+}
+
+@keyframes tap-legendary-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .tap-panel__button-wrap {
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .tap-panel__limit {
@@ -1865,6 +1969,19 @@ button.equip-tile {
 
   .tap-button__strike {
     display: none;
+  }
+
+  .tap-panel__legendary-marquee-track {
+    animation: none !important;
+  }
+
+  .tap-panel__legendary-scroll--duplicate {
+    display: none !important;
+  }
+
+  .tap-panel__legendary-marquee-viewport {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
