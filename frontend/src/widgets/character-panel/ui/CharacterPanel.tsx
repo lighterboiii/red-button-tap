@@ -43,6 +43,12 @@ type Props = {
     critChanceFromTaps: number;
     lastBattle: BattleOutcome | null;
     dismissLastBattle: () => void;
+    level: number;
+    xp: number;
+    xpToNext: number;
+    xpProgress: number;
+    atMaxLevel: boolean;
+    playerMaxHp: number;
   };
 };
 
@@ -98,7 +104,6 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [detailItem, setDetailItem] = useState<GearItem | null>(null);
   const [introCountdown, setIntroCountdown] = useState(BATTLE_INTRO_AUTO_SEC);
-  const replaySkipRef = useRef(false);
   const commitBattleRef = useRef(gear.commitBattle);
   commitBattleRef.current = gear.commitBattle;
 
@@ -122,12 +127,17 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
     critChanceFromTaps,
     lastBattle,
     dismissLastBattle,
+    level,
+    xp,
+    xpToNext,
+    xpProgress,
+    atMaxLevel,
+    playerMaxHp,
   } = gear;
 
   const totalCrit = totalCritChance;
 
   useEffect(() => {
-    replaySkipRef.current = false;
     if (!lastBattle) {
       setBattleLogRevealed(0);
       return;
@@ -143,7 +153,7 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
     let tid: ReturnType<typeof setTimeout>;
 
     const step = () => {
-      if (cancelled || replaySkipRef.current) return;
+      if (cancelled) return;
       count += 1;
       setBattleLogRevealed(count);
       if (count < n) {
@@ -217,6 +227,37 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
           />
         ) : (
           <div className="character-panel__silhouette" aria-hidden />
+        )}
+      </div>
+
+      <div className="character-panel__level-block" aria-label="Уровень и опыт">
+        <div className="character-panel__level-row">
+          <span className="character-panel__level-label">Уровень {level}</span>
+          <span className="character-panel__level-hp-hint" title="Макс. HP в бою">
+            HP {playerMaxHp}
+          </span>
+        </div>
+        {atMaxLevel ? (
+          <p className="character-panel__level-cap">Макс. уровень</p>
+        ) : (
+          <>
+            <div
+              className="character-panel__xp-bar"
+              role="progressbar"
+              aria-valuenow={xp}
+              aria-valuemin={0}
+              aria-valuemax={xpToNext}
+              aria-label={`Опыт ${xp} из ${xpToNext}`}
+            >
+              <div
+                className="character-panel__xp-bar-fill"
+                style={{ width: `${Math.round(xpProgress * 100)}%` }}
+              />
+            </div>
+            <p className="character-panel__xp-text">
+              {xp} / {xpToNext} опыта
+            </p>
+          </>
         )}
       </div>
 
@@ -431,18 +472,6 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
                 <span className="character-panel__battle-pulse-dot" />
                 Бой идёт
               </p>
-            ) : null}
-            {!battleLogComplete ? (
-              <button
-                type="button"
-                className="character-panel__battle-skip-log"
-                onClick={() => {
-                  replaySkipRef.current = true;
-                  setBattleLogRevealed(lastBattle.rounds.length);
-                }}
-              >
-                Показать всё
-              </button>
             ) : null}
             {battleLogComplete ? (
               <div

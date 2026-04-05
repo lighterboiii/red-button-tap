@@ -70,6 +70,7 @@ export async function postBattleOpponent(body: {
   battleKind: 'random' | 'spar';
   equipped: Record<GearSlot, GearItem | null>;
   critChanceFromTaps: number;
+  level: number;
 }): Promise<BattleOpponentResponse> {
   const res = await fetch(url('/api/battle/opponent'), {
     method: 'POST',
@@ -95,6 +96,7 @@ export async function postBattle(body: {
   equipped: Record<GearSlot, GearItem | null>;
   critChanceFromTaps: number;
   enemy: EnemyProfile;
+  level: number;
 }): Promise<{ outcome: BattleOutcome }> {
   const res = await fetch(url('/api/battle'), {
     method: 'POST',

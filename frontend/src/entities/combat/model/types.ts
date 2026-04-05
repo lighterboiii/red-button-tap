@@ -58,6 +58,7 @@ export type CombatPreviewResponse = {
 export type BattleOpponentResponse = {
   enemy: EnemyProfile;
   playerHp: number;
+  level?: number;
 };
 
 /** Экран «встреча» перед боем */

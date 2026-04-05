@@ -5,7 +5,8 @@ import { rollTap } from './rng.js';
 import { rollDrop, SLOT_LABEL_RU } from './drops.js';
 import { telegramAuthMiddleware } from './telegramMiddleware.js';
 import { computeCombatStats, computeItemStatsMap } from './combat/computeStats.js';
-import { PLAYER_HP_BASE, PLAYER_HP_PER_DEFENSE, TOTAL_CRIT_CAP } from './combat/constants.js';
+import { TOTAL_CRIT_CAP } from './combat/constants.js';
+import { clampPlayerLevel, playerMaxHpFromLevel } from './combat/progression.js';
 import {
   isSparEnemy,
   isValidRandomEnemy,
@@ -127,11 +128,11 @@ app.post('/api/battle/opponent', telegramAuthMiddleware, (req, res) => {
       }
     }
 
-    const stats = computeCombatStats(equipped);
-    const playerHp = PLAYER_HP_BASE + stats.defense * PLAYER_HP_PER_DEFENSE;
+    const level = clampPlayerLevel(req.body?.level);
+    const playerHp = playerMaxHpFromLevel(level);
     const enemy = battleKind === 'spar' ? { ...SPAR_OPPONENT } : rollEnemy();
 
-    res.json({ enemy, playerHp });
+    res.json({ enemy, playerHp, level });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'opponent_failed' });
@@ -176,8 +177,10 @@ app.post('/api/battle', telegramAuthMiddleware, (req, res) => {
       return res.status(400).json({ error: 'enemy_mismatch' });
     }
 
+    const level = clampPlayerLevel(req.body?.level);
+    const playerHp = playerMaxHpFromLevel(level);
     const stats = computeCombatStats(equipped);
-    const outcome = resolveBattleWithEnemy(stats, critChanceFromTaps, enemy, battleKind);
+    const outcome = resolveBattleWithEnemy(stats, critChanceFromTaps, enemy, battleKind, playerHp);
 
     res.json({ outcome });
   } catch (e) {

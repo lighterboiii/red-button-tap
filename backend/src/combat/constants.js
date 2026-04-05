@@ -3,8 +3,6 @@
 export const CRIT_FROM_GEAR_CAP = 0.22;
 export const TOTAL_CRIT_CAP = 0.52;
 
-export const PLAYER_HP_BASE = 42;
-export const PLAYER_HP_PER_DEFENSE = 2;
 export const BATTLE_MAX_ROUNDS = 10;
 
 export const BATTLE_SWING_MIN = 0.88;

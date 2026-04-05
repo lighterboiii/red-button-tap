@@ -1,9 +1,4 @@
-import {
-  BATTLE_MAX_ROUNDS,
-  PLAYER_HP_BASE,
-  PLAYER_HP_PER_DEFENSE,
-  TOTAL_CRIT_CAP,
-} from './constants.js';
+import { BATTLE_MAX_ROUNDS, TOTAL_CRIT_CAP } from './constants.js';
 import { computeEnemyStrikeDamage, computePlayerStrikeDamage, rollSwingMultiplier } from './formulas.js';
 
 export const SPAR_OPPONENT = {
@@ -100,8 +95,8 @@ function buildEnemyHitLine(m, enemy, playerHpAfter, spar) {
   return { side: 'enemy', fragments, text: fragmentsToText(fragments) };
 }
 
-function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind) {
-  let playerHp = PLAYER_HP_BASE + stats.defense * PLAYER_HP_PER_DEFENSE;
+function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind, playerMaxHp) {
+  let playerHp = playerMaxHp;
   let enemyHp = enemy.hp;
   const rounds = [];
 
@@ -195,15 +190,15 @@ function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind) {
   };
 }
 
-export function resolveBattleWithEnemy(stats, critChanceFromTaps, enemy, battleKind) {
-  return resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind);
+export function resolveBattleWithEnemy(stats, critChanceFromTaps, enemy, battleKind, playerMaxHp) {
+  return resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind, playerMaxHp);
 }
 
-export function resolveRandomBattle(stats, critChanceFromTaps) {
+export function resolveRandomBattle(stats, critChanceFromTaps, playerMaxHp) {
   const enemy = rollEnemy();
-  return resolveBattleCore(stats, critChanceFromTaps, enemy, 'random');
+  return resolveBattleCore(stats, critChanceFromTaps, enemy, 'random', playerMaxHp);
 }
 
-export function resolveSparBattle(stats, critChanceFromTaps) {
-  return resolveBattleCore(stats, critChanceFromTaps, { ...SPAR_OPPONENT }, 'spar');
+export function resolveSparBattle(stats, critChanceFromTaps, playerMaxHp) {
+  return resolveBattleCore(stats, critChanceFromTaps, { ...SPAR_OPPONENT }, 'spar', playerMaxHp);
 }

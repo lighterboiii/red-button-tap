@@ -20,7 +20,17 @@ import {
   CRIT_TAP_DELTA,
   CRIT_TAP_PROC_CHANCE,
 } from './tapCritConstants';
-import { loadGearDressing, saveGearDressing, type GearDressingStored } from './storage';
+import {
+  XP_LOSS,
+  XP_PER_TAP,
+  XP_TAP_DAILY_CAP,
+  XP_WIN_RANDOM,
+  XP_WIN_SPAR,
+  MAX_LEVEL,
+  playerMaxHpFromLevel,
+  xpToNextLevel,
+} from '@entities/progression';
+import { applyXpGrant, loadGearDressing, saveGearDressing, type GearDressingStored } from './storage';
 
 function newId(): string {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
@@ -93,11 +103,16 @@ export function useGearDressing() {
         if (Math.random() < CRIT_TAP_PROC_CHANCE) {
           crit = Math.min(CRIT_FROM_TAPS_CAP, crit + CRIT_TAP_DELTA);
         }
-        const next: GearDressingStored = {
+        let next: GearDressingStored = {
           ...prev,
           inventory: [...prev.inventory, item],
           critChanceFromTaps: crit,
         };
+        if (prev.tapXpDay < XP_TAP_DAILY_CAP) {
+          next = applyXpGrant({ ...next, tapXpDay: prev.tapXpDay + XP_PER_TAP }, XP_PER_TAP);
+        } else {
+          next = { ...next, tapXpDay: prev.tapXpDay };
+        }
         saveGearDressing(next);
         return next;
       });
@@ -152,6 +167,7 @@ export function useGearDressing() {
         battleKind: 'random',
         equipped: snap.equipped,
         critChanceFromTaps: snap.critChanceFromTaps,
+        level: snap.level,
       });
       setBattleIntro({
         battleKind: 'random',
@@ -177,6 +193,7 @@ export function useGearDressing() {
         battleKind: 'spar',
         equipped: snap.equipped,
         critChanceFromTaps: snap.critChanceFromTaps,
+        level: snap.level,
       });
       setBattleIntro({
         battleKind: 'spar',
@@ -208,24 +225,31 @@ export function useGearDressing() {
         equipped: snap.equipped,
         critChanceFromTaps: snap.critChanceFromTaps,
         enemy,
+        level: snap.level,
       });
       setLastBattle(outcome);
 
-      if (battleKind === 'random') {
-        setState((cur) => {
-          if (!equipMatches(cur.equipped, snap.equipped)) return cur;
-          const equipped = { ...cur.equipped };
+      const xpGain = outcome.won
+        ? battleKind === 'random'
+          ? XP_WIN_RANDOM
+          : XP_WIN_SPAR
+        : XP_LOSS;
+
+      setState((cur) => {
+        let next = applyXpGrant(cur, xpGain);
+        if (battleKind === 'random' && equipMatches(cur.equipped, snap.equipped)) {
+          const equipped = { ...next.equipped };
           for (const slot of GEAR_SLOTS) {
             const item = equipped[slot]!;
             const nextDur = item.durability - 1;
             if (nextDur <= 0) equipped[slot] = null;
             else equipped[slot] = { ...item, durability: nextDur };
           }
-          const next: GearDressingStored = { ...cur, equipped };
-          saveGearDressing(next);
-          return next;
-        });
-      }
+          next = { ...next, equipped };
+        }
+        saveGearDressing(next);
+        return next;
+      });
     } catch (e) {
       console.error(e);
     } finally {
@@ -257,8 +281,23 @@ export function useGearDressing() {
     [state.inventory.length],
   );
 
+  const levelProgress = useMemo(() => {
+    const atMaxLevel = state.level >= MAX_LEVEL;
+    const need = xpToNextLevel(state.level);
+    const xpProgress = atMaxLevel ? 1 : need > 0 ? state.xp / need : 0;
+    return {
+      level: state.level,
+      xp: state.xp,
+      xpToNext: atMaxLevel ? 0 : need,
+      xpProgress,
+      atMaxLevel,
+      playerMaxHp: playerMaxHpFromLevel(state.level),
+    };
+  }, [state.level, state.xp]);
+
   return {
     dayKey: state.dayKey,
+    ...levelProgress,
     inventory: state.inventory,
     inventoryFull,
     maxInventorySlots: MAX_INVENTORY_SLOTS,
