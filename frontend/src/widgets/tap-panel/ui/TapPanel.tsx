@@ -13,9 +13,11 @@ type Props = {
   onTakeDrop: (result: TapResult) => void;
   /** Закрыть экран без сохранения вещи */
   onSkipDrop: () => void;
+  /** Рюкзак заполнен — «Взять» недоступно */
+  inventoryFull?: boolean;
 };
 
-export function TapPanel({ onTakeDrop, onSkipDrop }: Props) {
+export function TapPanel({ onTakeDrop, onSkipDrop, inventoryFull }: Props) {
   const { phase, result, error, reset, manualTap, session } = useTapFlow();
   const rolling = phase === 'rolling';
   const showResult = phase === 'done' && result;
@@ -29,7 +31,8 @@ export function TapPanel({ onTakeDrop, onSkipDrop }: Props) {
   const showLimitDaily = session.rationed && session.blockReason === 'daily_limit';
 
   const handleTake = () => {
-    if (result) onTakeDrop(result);
+    if (inventoryFull || !result) return;
+    onTakeDrop(result);
     reset();
   };
 
@@ -75,7 +78,18 @@ export function TapPanel({ onTakeDrop, onSkipDrop }: Props) {
             Вещь: {GEAR_SLOT_LABELS[result.drop.slot]} · {result.drop.label}
           </p>
           <div className="tap-panel__drop-actions" role="group" aria-label="Дроп с тапа">
-            <button type="button" className="tap-panel__drop-take" onClick={handleTake}>
+            {inventoryFull ? (
+              <p className="tap-panel__inv-full" role="status">
+                Инвентарь полон — надень или убери вещи на вкладке «Персонаж».
+              </p>
+            ) : null}
+            <button
+              type="button"
+              className="tap-panel__drop-take"
+              disabled={Boolean(inventoryFull)}
+              title={inventoryFull ? 'Рюкзак заполнен' : undefined}
+              onClick={handleTake}
+            >
               Взять
             </button>
             <button type="button" className="tap-panel__drop-skip" onClick={handleSkip}>

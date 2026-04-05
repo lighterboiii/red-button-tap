@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import type {
   BattleIntroState,
   BattleLogFragment,
@@ -7,7 +8,8 @@ import type {
   CombatStats,
   ItemCombatStats,
 } from '@entities/combat';
-import { GEAR_SLOTS, GEAR_SLOT_LABELS, type GearItem, type GearSlot } from '@entities/gear';
+import { RARITY_META } from '@entities/outcome';
+import { GEAR_SLOTS, GEAR_SLOT_LABELS, MAX_INVENTORY_SLOTS, type GearItem, type GearSlot } from '@entities/gear';
 import { EquipTile } from '@widgets/gear-equip-tile';
 
 /** Пауза перед первой строкой журнала — «заводится» бой */
@@ -46,14 +48,6 @@ type Props = {
 
 function formatCritPct(crit: number): string {
   return `${(crit * 100).toFixed(1)}%`;
-}
-
-function ItemCombatLine({ stats }: { stats: ItemCombatStats }) {
-  return (
-    <span className="character-panel__item-combat">
-      Атк {stats.attack} · Защ {stats.defense} · Крит {formatCritPct(stats.critChance)}
-    </span>
-  );
 }
 
 function renderBattleLineFragments(line: BattleRoundLine): ReactNode {
@@ -101,6 +95,8 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
   const [avatarBroken, setAvatarBroken] = useState(false);
   /** Сколько строк журнала боя уже показано (пошагово). */
   const [battleLogRevealed, setBattleLogRevealed] = useState(0);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [detailItem, setDetailItem] = useState<GearItem | null>(null);
   const [introCountdown, setIntroCountdown] = useState(BATTLE_INTRO_AUTO_SEC);
   const replaySkipRef = useRef(false);
   const commitBattleRef = useRef(gear.commitBattle);
@@ -180,6 +176,27 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
     return () => window.clearInterval(id);
   }, [battleIntro]);
 
+  useEffect(() => {
+    if (!inventoryOpen && !detailItem) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (detailItem) setDetailItem(null);
+        else setInventoryOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [inventoryOpen, detailItem]);
+
+  useEffect(() => {
+    if (!inventoryOpen && !detailItem) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [inventoryOpen, detailItem]);
+
   const battleLogComplete =
     lastBattle != null && battleLogRevealed >= lastBattle.rounds.length;
 
@@ -233,8 +250,8 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
                 slot={slot}
                 item={item}
                 stats={itemStats}
-                interactive
-                onUnequip={() => unequip(slot)}
+                onActivate={item ? () => unequip(slot) : undefined}
+                action="unequip"
               />
             </li>
           );
@@ -471,39 +488,151 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
         </div>
       ) : null}
 
-      <div className="character-panel__stash">
-        <h2 className="character-panel__stash-title">Инвентарь</h2>
-        {inventory.length === 0 ? (
-          <p className="character-panel__stash-empty">—</p>
-        ) : (
-          <ul className="character-panel__stash-list">
-            {inventory.map((item) => {
-              const s = itemStatsById[item.id] ?? null;
-              return (
-                <li key={item.id}>
+      <div className="character-panel__inv-trigger-wrap">
+        <button
+          type="button"
+          className="character-panel__inv-trigger"
+          onClick={() => setInventoryOpen(true)}
+        >
+          Инвентарь
+          <span className="character-panel__inv-trigger-badge">
+            {inventory.length}/{MAX_INVENTORY_SLOTS}
+          </span>
+        </button>
+      </div>
+
+      {inventoryOpen
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                className="character-panel__inv-backdrop"
+                aria-label="Закрыть инвентарь"
+                onClick={() => setInventoryOpen(false)}
+              />
+              <div
+                className="character-panel__inv-sheet"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="character-panel-inv-title"
+              >
+                <div className="character-panel__inv-sheet-head">
+                  <h2 id="character-panel-inv-title" className="character-panel__inv-sheet-title">
+                    Инвентарь
+                  </h2>
                   <button
                     type="button"
-                    className={`character-panel__stash-chip character-panel__stash-chip--${item.rarity}`}
-                    onClick={() => equip(item.id)}
-                    title={
-                      s
-                        ? `Надеть · Атк ${s.attack} / Защ ${s.defense} / Крит ${formatCritPct(s.critChance)}`
-                        : 'Надеть'
-                    }
+                    className="character-panel__inv-sheet-close"
+                    aria-label="Закрыть"
+                    onClick={() => setInventoryOpen(false)}
                   >
-                    <span className="character-panel__stash-slot">{GEAR_SLOT_LABELS[item.slot]}</span>
-                    <span className="character-panel__stash-label">{item.label}</span>
-                    <span className="character-panel__stash-meta">
-                      {item.durability}/{item.maxDurability}
-                    </span>
-                    {s ? <ItemCombatLine stats={s} /> : <span className="character-panel__item-combat">…</span>}
+                    ×
                   </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+                </div>
+                <div className="character-panel__inv-sheet-body">
+                  <ul className="character-panel__inv-grid">
+                    {Array.from({ length: MAX_INVENTORY_SLOTS }, (_, i) => {
+                      const item = inventory[i] ?? null;
+                      if (!item) {
+                        return (
+                          <li key={`inv-cell-${i}`} className="character-panel__inv-grid-cell">
+                            <div className="equip-tile equip-tile--inv-empty" aria-hidden />
+                          </li>
+                        );
+                      }
+                      const s = itemStatsById[item.id] ?? null;
+                      return (
+                        <li key={item.id} className="character-panel__inv-grid-cell">
+                          <EquipTile
+                            slot={item.slot}
+                            item={item}
+                            stats={s}
+                            onActivate={() => setDetailItem(item)}
+                            action="inspect"
+                          />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
+            </>,
+            document.body,
+          )
+        : null}
+
+      {detailItem
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                className="character-panel__item-detail-backdrop"
+                aria-label="Закрыть"
+                onClick={() => setDetailItem(null)}
+              />
+              <div
+                className={`character-panel__item-detail character-panel__item-detail--${detailItem.rarity}`}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="character-panel-item-detail-title"
+              >
+                <h3 id="character-panel-item-detail-title" className="character-panel__item-detail-name">
+                  {detailItem.label}
+                </h3>
+                <p className="character-panel__item-detail-rarity">{RARITY_META[detailItem.rarity].title}</p>
+                <dl className="character-panel__item-detail-dl">
+                  <div>
+                    <dt>Слот</dt>
+                    <dd>{GEAR_SLOT_LABELS[detailItem.slot]}</dd>
+                  </div>
+                  <div>
+                    <dt>Прочность</dt>
+                    <dd>
+                      {detailItem.durability}/{detailItem.maxDurability}
+                    </dd>
+                  </div>
+                  {itemStatsById[detailItem.id] ? (
+                    <>
+                      <div>
+                        <dt>Атака</dt>
+                        <dd>{itemStatsById[detailItem.id]!.attack}</dd>
+                      </div>
+                      <div>
+                        <dt>Защита</dt>
+                        <dd>{itemStatsById[detailItem.id]!.defense}</dd>
+                      </div>
+                      <div>
+                        <dt>Крит</dt>
+                        <dd>{formatCritPct(itemStatsById[detailItem.id]!.critChance)}</dd>
+                      </div>
+                    </>
+                  ) : null}
+                </dl>
+                <div className="character-panel__item-detail-actions">
+                  <button
+                    type="button"
+                    className="character-panel__item-detail-equip"
+                    onClick={() => {
+                      equip(detailItem.id);
+                      setDetailItem(null);
+                      setInventoryOpen(false);
+                    }}
+                  >
+                    Надеть
+                  </button>
+                  <button
+                    type="button"
+                    className="character-panel__item-detail-close"
+                    onClick={() => setDetailItem(null)}
+                  >
+                    Закрыть
+                  </button>
+                </div>
+              </div>
+            </>,
+            document.body,
+          )
+        : null}
     </section>
   );
 }

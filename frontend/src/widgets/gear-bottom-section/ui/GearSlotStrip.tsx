@@ -16,7 +16,7 @@ export function GearSlotStrip({ equipped, itemStatsById }: Props) {
           const stats = item ? itemStatsById[item.id] ?? null : null;
           return (
             <li key={slot} className="gear-slot-strip__cell">
-              <EquipTile slot={slot} item={item} stats={stats} interactive={false} />
+              <EquipTile slot={slot} item={item} stats={stats} />
             </li>
           );
         })}

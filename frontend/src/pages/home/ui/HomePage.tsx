@@ -18,7 +18,11 @@ export function HomePage() {
       {bottomTab === 'slots' ? (
         <div className="home-page__scroll">
           <div className="home-page__tap">
-            <TapPanel onTakeDrop={gear.applyTapDrop} onSkipDrop={() => undefined} />
+            <TapPanel
+              onTakeDrop={gear.applyTapDrop}
+              onSkipDrop={() => undefined}
+              inventoryFull={gear.inventoryFull}
+            />
           </div>
         </div>
       ) : null}

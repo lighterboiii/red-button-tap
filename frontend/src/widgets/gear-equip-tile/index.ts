@@ -1,1 +1,1 @@
-export { EquipTile } from './ui/EquipTile';
+export { EquipTile, type EquipTileAction } from './ui/EquipTile';

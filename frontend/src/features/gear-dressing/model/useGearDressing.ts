@@ -10,6 +10,7 @@ import type {
 import {
   GEAR_SLOTS,
   MAX_GEAR_DURABILITY,
+  MAX_INVENTORY_SLOTS,
   type GearItem,
   type GearSlot,
 } from '@entities/gear';
@@ -77,16 +78,17 @@ export function useGearDressing() {
   /** Только по кнопке «Взять» после тапа; «Пропустить» сюда не вызывается. */
   const applyTapDrop = useCallback(
     (result: TapResult) => {
-      const { drop, rarity } = result;
-      const item: GearItem = {
-        id: newId(),
-        slot: drop.slot,
-        label: drop.label,
-        rarity,
-        durability: MAX_GEAR_DURABILITY,
-        maxDurability: MAX_GEAR_DURABILITY,
-      };
       setState((prev) => {
+        if (prev.inventory.length >= MAX_INVENTORY_SLOTS) return prev;
+        const { drop, rarity } = result;
+        const item: GearItem = {
+          id: newId(),
+          slot: drop.slot,
+          label: drop.label,
+          rarity,
+          durability: MAX_GEAR_DURABILITY,
+          maxDurability: MAX_GEAR_DURABILITY,
+        };
         let crit = prev.critChanceFromTaps;
         if (Math.random() < CRIT_TAP_PROC_CHANCE) {
           crit = Math.min(CRIT_FROM_TAPS_CAP, crit + CRIT_TAP_DELTA);
@@ -250,9 +252,16 @@ export function useGearDressing() {
 
   const canSpar = isFullyEquipped;
 
+  const inventoryFull = useMemo(
+    () => state.inventory.length >= MAX_INVENTORY_SLOTS,
+    [state.inventory.length],
+  );
+
   return {
     dayKey: state.dayKey,
     inventory: state.inventory,
+    inventoryFull,
+    maxInventorySlots: MAX_INVENTORY_SLOTS,
     equipped: state.equipped,
     critChanceFromTaps: state.critChanceFromTaps,
     combatStats,

@@ -5,17 +5,19 @@ function formatCritPct(crit: number): string {
   return `${(crit * 100).toFixed(1)}%`;
 }
 
+export type EquipTileAction = 'unequip' | 'inspect';
+
 type Props = {
   slot: GearSlot;
   item: GearItem | null;
   stats: ItemCombatStats | null;
-  /** Кнопка «снять» (персонаж) или только показ (вкладка «Кнопка») */
-  interactive: boolean;
-  /** Только при `interactive` */
-  onUnequip?: () => void;
+  /** Кнопка: снять слот / открыть карточку в инвентаре */
+  onActivate?: () => void;
+  /** Как озвучить кнопку для a11y */
+  action?: EquipTileAction;
 };
 
-export function EquipTile({ slot, item, stats, interactive, onUnequip }: Props) {
+export function EquipTile({ slot, item, stats, onActivate, action = 'unequip' }: Props) {
   if (!item) {
     return (
       <div
@@ -35,10 +37,17 @@ export function EquipTile({ slot, item, stats, interactive, onUnequip }: Props) 
       ? `${item.label} · Атк ${stats.attack} / Защ ${stats.defense} / Крит ${formatCritPct(stats.critChance)} · ${item.durability}/${item.maxDurability}`
       : item.label;
 
-  const aria =
+  const ariaInspect =
     stats != null
-      ? `${interactive ? 'Снять ' : ''}${item.label}. Атака ${stats.attack}, защита ${stats.defense}, крит ${formatCritPct(stats.critChance)}, прочность ${item.durability} из ${item.maxDurability}`
-      : `${item.label}`;
+      ? `Подробнее: ${item.label}. Слот ${GEAR_SLOT_LABELS[item.slot]}. Атака ${stats.attack}, защита ${stats.defense}, крит ${formatCritPct(stats.critChance)}, прочность ${item.durability} из ${item.maxDurability}`
+      : `Подробнее: ${item.label}`;
+
+  const ariaUnequip =
+    stats != null
+      ? `Снять ${item.label}. Атака ${stats.attack}, защита ${stats.defense}, крит ${formatCritPct(stats.critChance)}, прочность ${item.durability} из ${item.maxDurability}`
+      : `Снять ${item.label}`;
+
+  const aria = action === 'inspect' ? ariaInspect : ariaUnequip;
 
   const inner = (
     <>
@@ -62,22 +71,16 @@ export function EquipTile({ slot, item, stats, interactive, onUnequip }: Props) 
 
   const cls = `equip-tile equip-tile--${item.rarity}`;
 
-  if (interactive) {
+  if (onActivate) {
     return (
-      <button
-        type="button"
-        className={cls}
-        title={title}
-        aria-label={aria}
-        onClick={() => onUnequip?.()}
-      >
+      <button type="button" className={cls} title={title} aria-label={aria} onClick={onActivate}>
         {inner}
       </button>
     );
   }
 
   return (
-    <div className={cls} title={title} aria-label={aria}>
+    <div className={cls} title={title} aria-label={title}>
       {inner}
     </div>
   );

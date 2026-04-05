@@ -1,4 +1,4 @@
-import { GEAR_SLOTS, type GearItem, type GearSlot } from '@entities/gear';
+import { GEAR_SLOTS, MAX_INVENTORY_SLOTS, type GearItem, type GearSlot } from '@entities/gear';
 import { todayKey } from '@features/tap-session/model/storage';
 
 const KEY = 'buttoff_gear_v4';
@@ -71,7 +71,7 @@ export function loadGearDressing(): GearDressingStored {
           equipped[slot] = e && typeof e === 'object' && 'id' in e ? (e as GearItem) : null;
         }
         const inv = Array.isArray(parsed.inventory)
-          ? parsed.inventory.filter((x): x is GearItem => typeof x?.id === 'string')
+          ? parsed.inventory.filter((x): x is GearItem => typeof x?.id === 'string').slice(0, MAX_INVENTORY_SLOTS)
           : [];
         const crit =
           typeof parsed.critChanceFromTaps === 'number' && Number.isFinite(parsed.critChanceFromTaps)
