@@ -1,5 +1,5 @@
 import type { ItemCombatStats } from '@entities/combat';
-import { GEAR_SLOT_LABELS, SLOT_TILE_GLYPH, critPctShort, type GearItem, type GearSlot } from '@entities/gear';
+import { GEAR_SLOT_LABELS, SlotTypeIcon, critPctShort, type GearItem, type GearSlot } from '@entities/gear';
 
 function formatCritPct(crit: number): string {
   return `${(crit * 100).toFixed(1)}%`;
@@ -25,8 +25,8 @@ export function EquipTile({ slot, item, stats, onActivate, action = 'unequip' }:
         title={GEAR_SLOT_LABELS[slot]}
         aria-label={`Пустой слот: ${GEAR_SLOT_LABELS[slot]}`}
       >
-        <span className="equip-tile__icon equip-tile__icon--muted" aria-hidden>
-          {SLOT_TILE_GLYPH[slot]}
+        <span className="equip-tile__icon equip-tile__icon--muted">
+          <SlotTypeIcon slot={slot} className="equip-tile__icon-svg" />
         </span>
       </div>
     );
@@ -60,8 +60,8 @@ export function EquipTile({ slot, item, stats, onActivate, action = 'unequip' }:
       <span className="equip-tile__def" aria-hidden>
         {stats ? stats.defense : '–'}
       </span>
-      <span className="equip-tile__icon" aria-hidden>
-        {SLOT_TILE_GLYPH[item.slot]}
+      <span className="equip-tile__icon">
+        <SlotTypeIcon slot={item.slot} className="equip-tile__icon-svg" />
       </span>
       <span className="equip-tile__dur" aria-hidden>
         {item.durability}/{item.maxDurability}

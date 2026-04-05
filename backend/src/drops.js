@@ -9,9 +9,9 @@ export const GEAR_SLOTS = /** @type {const} */ ([
   'head',
   'sword',
   'shield',
-  'shoulders',
   'chest',
   'jewelry',
+  'shoulders',
 ]);
 
 /** Слоты, обязательные для боя (без бижутерии). */
@@ -19,16 +19,16 @@ export const CORE_GEAR_SLOTS = /** @type {const} */ ([
   'head',
   'sword',
   'shield',
-  'shoulders',
   'chest',
+  'shoulders',
 ]);
 
 /** @typedef {typeof GEAR_SLOTS[number]} GearSlot */
 
 /** Подписи слота для UI (стиль RPG). */
 export const SLOT_LABEL_RU = {
-  head: 'Голова',
-  sword: 'Клинок',
+  head: 'Шлем',
+  sword: 'Оружие',
   shield: 'Щит',
   shoulders: 'Наплечники',
   chest: 'Нагрудник',

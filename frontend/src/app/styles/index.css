@@ -554,12 +554,10 @@ button,
   font-size: 0.78em;
 }
 
-.character-panel .equip-tile__icon {
-  font-size: 2.35em;
-}
-
-.character-panel .equip-tile__icon--muted {
-  font-size: 2.35em;
+.character-panel .equip-tile__icon-svg {
+  width: 3.6em;
+  height: 3.6em;
+  display: block;
 }
 
 /** Плитка экипировки: вкладка «Кузня» и «Персонаж» */
@@ -652,12 +650,21 @@ button.equip-tile {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -52%);
-  font-size: 1.28rem;
-  line-height: 1;
+  line-height: 0;
   opacity: 0.88;
   filter: grayscale(0.15);
   pointer-events: none;
   user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.equip-tile__icon-svg {
+  width: 1.98rem;
+  height: 1.98rem;
+  display: block;
+  flex-shrink: 0;
 }
 
 .equip-tile__icon--muted {
@@ -1827,8 +1834,8 @@ button.equip-tile {
 
 .tap-panel__drop-icon-wrap {
   flex: 0 0 auto;
-  width: 3rem;
-  height: 3rem;
+  width: 4.2rem;
+  height: 4.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1868,11 +1875,19 @@ button.equip-tile {
 }
 
 .tap-panel__drop-icon {
-  font-size: 1.65rem;
-  line-height: 1;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Подсветка глифа: для ◇/◆ — color; для эмодзи — цветной ореол */
+.tap-panel__drop-icon-svg {
+  width: 2.64rem;
+  height: 2.64rem;
+  display: block;
+}
+
+/* Подсветка иконки слота по редкости */
 .tap-panel__drop-icon--common {
   color: #c8cad4;
   filter: drop-shadow(0 0 5px rgba(200, 200, 215, 0.45));

@@ -10,6 +10,7 @@ export {
   type GearDrop,
 } from './model/types';
 
-export { SLOT_TILE_GLYPH, critPctShort } from './model/slotTile';
+export { critPctShort } from './model/slotTile';
+export { SlotTypeIcon } from './ui/SlotTypeIcon';
 
 export { CHARACTER_SLOT_GRID_AREA } from './model/characterEquipGrid';

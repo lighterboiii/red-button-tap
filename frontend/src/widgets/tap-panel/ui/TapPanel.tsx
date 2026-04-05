@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { RARITY_META } from '@entities/outcome';
 import type { TapResult } from '@entities/outcome';
 import type { ItemCombatStats } from '@entities/combat';
-import { GEAR_SLOT_LABELS, SLOT_TILE_GLYPH } from '@entities/gear';
+import { GEAR_SLOT_LABELS, SlotTypeIcon } from '@entities/gear';
 import { TapButton, useTapFlow } from '@features/tap-action';
 import { postCombatItemStats } from '@shared/api/client';
 import { formatCooldownMs } from '@shared/lib/formatCooldown';
@@ -138,7 +138,7 @@ export function TapPanel({
               aria-hidden
             >
               <span className={`tap-panel__drop-icon tap-panel__drop-icon--${result.rarity}`}>
-                {SLOT_TILE_GLYPH[result.drop.slot]}
+                <SlotTypeIcon slot={result.drop.slot} className="tap-panel__drop-icon-svg" />
               </span>
             </div>
             <div className="tap-panel__drop-main">

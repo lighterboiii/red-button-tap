@@ -1,10 +1,11 @@
 import type { Rarity } from '@entities/outcome/model/rarity';
 
 /** Обязательные для боя слоты (без бижутерии). */
-export const CORE_GEAR_SLOTS = ['head', 'sword', 'shield', 'shoulders', 'chest'] as const;
+export const CORE_GEAR_SLOTS = ['head', 'sword', 'shield', 'chest', 'shoulders'] as const;
 export type CoreGearSlot = (typeof CORE_GEAR_SLOTS)[number];
 
-export const GEAR_SLOTS = [...CORE_GEAR_SLOTS, 'jewelry'] as const;
+/** Порядок для полосы слотов: наплечники справа, бижутерия перед ними */
+export const GEAR_SLOTS = ['head', 'sword', 'shield', 'chest', 'jewelry', 'shoulders'] as const;
 export type GearSlot = (typeof GEAR_SLOTS)[number];
 
 export const GEAR_SLOT_LABELS: Record<GearSlot, string> = {

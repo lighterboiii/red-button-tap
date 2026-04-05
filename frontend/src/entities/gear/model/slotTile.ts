@@ -1,14 +1,4 @@
-import type { GearSlot } from './types';
-
-/** Глиф типа слота в центре плитки */
-export const SLOT_TILE_GLYPH: Record<GearSlot, string> = {
-  head: '⛑',
-  sword: '⚔',
-  shield: '🛡',
-  shoulders: '◇',
-  chest: '◆',
-  jewelry: '✧',
-};
+/** Иконки слотов — см. `SlotTypeIcon` в `../ui/SlotTypeIcon.tsx` */
 
 export function critPctShort(crit: number): string {
   const n = crit * 100;
