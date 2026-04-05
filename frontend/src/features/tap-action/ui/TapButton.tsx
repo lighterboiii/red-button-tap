@@ -18,6 +18,8 @@ export function TapButton({ disabled, rolling, onTap }: Props) {
         <span className="tap-button__nudge">
           <span className="tap-button__glow" aria-hidden />
           <span className="tap-button__fill" aria-hidden />
+          {/* Вспышка «искр» и кольца при ударе по металлу */}
+          <span className="tap-button__strike" aria-hidden />
         </span>
       </span>
     </button>

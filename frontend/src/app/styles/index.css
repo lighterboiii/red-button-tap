@@ -1684,10 +1684,11 @@ button.equip-tile {
   animation: none;
 }
 
+/* Удар по наковальне: слегка «сплющить» заготовку, не как пластиковая кнопка */
 .tap-button:active:not(:disabled) .tap-button__inner {
-  transform: scale(0.76) translateY(8px);
-  transition-duration: 0.07s;
-  transition-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+  transform: scaleX(0.92) scaleY(0.86) translateY(3px);
+  transition-duration: 0.055s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Свечение — один ровный пульс (красное) */
@@ -1700,6 +1701,11 @@ button.equip-tile {
   filter: blur(14px);
   pointer-events: none;
   animation: tap-glow-pulse 2.4s ease-in-out infinite;
+  transition:
+    opacity 0.12s ease,
+    filter 0.12s ease,
+    transform 0.12s ease,
+    background 0.12s ease;
 }
 
 @keyframes tap-glow-pulse {
@@ -1726,6 +1732,47 @@ button.equip-tile {
     0 2px 8px rgba(0, 0, 0, 0.25),
     inset 0 4px 14px rgba(255, 200, 200, 0.35),
     inset 0 -10px 22px rgba(0, 0, 0, 0.35);
+  transition:
+    background 0.07s ease-out,
+    box-shadow 0.07s ease-out,
+    filter 0.07s ease-out;
+}
+
+/* Краткая вспышка раскалённого металла в точке удара */
+.tap-button:active:not(:disabled) .tap-button__fill {
+  background: radial-gradient(
+    circle at 42% 32%,
+    #fff8f0 0%,
+    #ffc040 8%,
+    #ff6018 28%,
+    #d41810 55%,
+    #5c0808 100%
+  );
+  box-shadow:
+    0 8px 40px rgba(255, 160, 60, 0.65),
+    0 0 28px rgba(255, 220, 140, 0.45),
+    inset 0 2px 18px rgba(255, 240, 220, 0.55),
+    inset 0 -8px 20px rgba(40, 0, 0, 0.45);
+  filter: brightness(1.08) saturate(1.15);
+}
+
+.tap-button:active:not(:disabled) .tap-button__glow {
+  animation: none;
+  opacity: 1;
+  filter: blur(12px) brightness(1.25);
+  transform: scale(1.08);
+  background: radial-gradient(
+    circle,
+    rgba(255, 230, 180, 0.65) 0%,
+    rgba(255, 120, 50, 0.45) 38%,
+    rgba(200, 30, 20, 0.25) 58%,
+    transparent 72%
+  );
+  transition:
+    opacity 0.06s ease,
+    filter 0.06s ease,
+    transform 0.06s ease,
+    background 0.06s ease;
 }
 
 .tap-button--rolling .tap-button__glow {
@@ -1746,6 +1793,62 @@ button.equip-tile {
   }
 }
 
+/* Кольцо удара + «искры» (конус при нажатии) */
+.tap-button__strike {
+  position: absolute;
+  inset: -6%;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  border: 2px solid transparent;
+  box-shadow: none;
+  background: conic-gradient(
+    from 220deg at 50% 50%,
+    transparent 0deg,
+    transparent 52deg,
+    rgba(255, 240, 200, 0.55) 58deg,
+    rgba(255, 180, 80, 0.35) 72deg,
+    transparent 88deg,
+    transparent 360deg
+  );
+  mask: radial-gradient(circle, transparent 52%, #000 54%, #000 100%);
+  -webkit-mask: radial-gradient(circle, transparent 52%, #000 54%, #000 100%);
+  transform: scale(0.92);
+  transition:
+    opacity 0.05s ease,
+    transform 0.05s ease,
+    border-color 0.05s ease,
+    box-shadow 0.05s ease;
+}
+
+.tap-button:active:not(:disabled) .tap-button__strike {
+  opacity: 1;
+  transform: scale(1);
+  border-color: rgba(255, 210, 140, 0.5);
+  box-shadow:
+    0 0 20px rgba(255, 200, 100, 0.4),
+    inset 0 0 12px rgba(255, 255, 255, 0.15);
+  animation: tap-forge-spark 0.22s ease-out 1;
+}
+
+@keyframes tap-forge-spark {
+  0% {
+    opacity: 0.95;
+    transform: scale(0.88);
+    filter: brightness(1.4);
+  }
+  70% {
+    opacity: 0.65;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.35;
+    transform: scale(1.08);
+    filter: brightness(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tap-button__glow,
   .tap-button__fill {
@@ -1756,6 +1859,13 @@ button.equip-tile {
     animation: none !important;
   }
 
+  .tap-button:active:not(:disabled) .tap-button__strike {
+    animation: none !important;
+  }
+
+  .tap-button__strike {
+    display: none;
+  }
 }
 
 .tap-panel__rolling {
