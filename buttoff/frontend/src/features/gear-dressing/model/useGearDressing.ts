@@ -6,7 +6,6 @@ import {
   type GearItem,
   type GearSlot,
 } from '@entities/gear';
-import { pickTaunt } from './taunts';
 import { loadGearDressing, saveGearDressing, type GearDressingStored } from './storage';
 
 function newId(): string {
@@ -16,7 +15,6 @@ function newId(): string {
 
 export function useGearDressing() {
   const [state, setState] = useState<GearDressingStored>(() => loadGearDressing());
-  const [lastTaunt, setLastTaunt] = useState<string | null>(null);
 
   const applyTapDrop = useCallback(
     (result: TapResult) => {
@@ -91,7 +89,6 @@ export function useGearDressing() {
       saveGearDressing(next);
       return next;
     });
-    setLastTaunt(pickTaunt());
   }, []);
 
   const isFullyEquipped = useMemo(
@@ -104,8 +101,6 @@ export function useGearDressing() {
     return GEAR_SLOTS.every((s) => (state.equipped[s]?.durability ?? 0) >= 1);
   }, [isFullyEquipped, state.equipped]);
 
-  const dismissTaunt = useCallback(() => setLastTaunt(null), []);
-
   return {
     dayKey: state.dayKey,
     inventory: state.inventory,
@@ -116,7 +111,5 @@ export function useGearDressing() {
     runBattle,
     isFullyEquipped,
     canBattle,
-    lastTaunt,
-    dismissTaunt,
   };
 }

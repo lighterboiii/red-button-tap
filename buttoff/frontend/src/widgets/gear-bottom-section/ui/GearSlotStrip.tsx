@@ -6,10 +6,10 @@ type Props = {
 
 const SLOT_SHORT: Record<GearSlot, string> = {
   head: 'Г',
-  sword: 'М',
+  sword: 'К',
   shield: 'Щ',
   shoulders: 'Пл',
-  chest: 'Гр',
+  chest: 'Н',
 };
 
 export function GearSlotStrip({ equipped }: Props) {

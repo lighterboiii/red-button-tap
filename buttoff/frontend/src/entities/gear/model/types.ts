@@ -5,10 +5,10 @@ export type GearSlot = (typeof GEAR_SLOTS)[number];
 
 export const GEAR_SLOT_LABELS: Record<GearSlot, string> = {
   head: 'Голова',
-  sword: 'Меч',
+  sword: 'Клинок',
   shield: 'Щит',
-  shoulders: 'Плечи',
-  chest: 'Грудь',
+  shoulders: 'Наплечники',
+  chest: 'Нагрудник',
 };
 
 export const MAX_GEAR_DURABILITY = 2;

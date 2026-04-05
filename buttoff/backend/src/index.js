@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { rollTap } from './rng.js';
-import { rollDrop } from './drops.js';
+import { rollDrop, SLOT_LABEL_RU } from './drops.js';
 import { telegramAuthMiddleware } from './telegramMiddleware.js';
 
 const app = express();
@@ -40,8 +40,8 @@ app.post('/api/tap', telegramAuthMiddleware, (_req, res) => {
   res.json({
     id: result.id,
     rarity: result.rarity,
-    label: result.label,
-    message: result.message,
+    label: drop.label,
+    message: SLOT_LABEL_RU[drop.slot],
     approximateChance: result.approximateChance,
     drop,
   });

@@ -26,7 +26,6 @@ export function GearBottomSection({ gear, tab, onTabChange, avatarUrl, displayNa
           hidden={tab !== 'slots'}
           className="gear-dock__panel gear-dock__panel--slots"
         >
-          <p className="gear-dock__hint">Слоты: пустые квадраты — ещё не одето; цвет — редкость.</p>
           <GearSlotStrip equipped={gear.equipped} />
         </div>
 
