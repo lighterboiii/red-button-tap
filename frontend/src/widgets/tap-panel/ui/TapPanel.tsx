@@ -100,8 +100,13 @@ export function TapPanel({
   };
 
   return (
-    <section className="tap-panel" aria-label="Добыча">
-      <h1 className="tap-panel__sr-only">Добыча</h1>
+    <section className="tap-panel" aria-label="Кузня">
+      <h1 className="tap-panel__sr-only">Кузня</h1>
+
+      <p className="tap-panel__forge-hint">
+        Направь волю на невидимую кузню: каждое касание подпитывает пламя, пока облик вещи не выйдет из
+        пустоты. Не жди знака — металл сам назовёт час.
+      </p>
 
       <div className="tap-panel__button-wrap">
         <TapButton disabled={buttonDisabled} rolling={rolling} onTap={manualTap} />

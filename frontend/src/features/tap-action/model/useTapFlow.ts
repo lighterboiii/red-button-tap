@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { TAP_COOLDOWN_MS } from '@entities/tap-rules';
+import { useTapForge } from '@features/tap-forge';
 import { useTapSession } from '@features/tap-session/model/useTapSession';
 import { useTapOutcome } from './useTapOutcome';
 
 /**
  * Ручной тап + лимит/кулдаун; при subscriptionStub — по истечении кулдауна срабатывает авто-тап (заглушка).
  * Дроп в инвентарь — только после выбора «Взять» в TapPanel.
+ * До дропа нужно много нажатий: кузня накапливает «удар», порог скрыт (см. tap-forge).
  */
 export function useTapFlow() {
   const session = useTapSession();
+  const forge = useTapForge();
   const { phase, result, error, tap, reset } = useTapOutcome();
 
   const phaseRef = useRef(phase);
@@ -22,12 +25,17 @@ export function useTapFlow() {
   const runTap = useCallback(async (): Promise<boolean> => {
     if (phaseRef.current === 'rolling') return false;
     if (!endlessRef.current && !canTapRef.current) return false;
+
+    const step = forge.advanceForge();
+    if (step === 'ignored' || step === 'charging') return false;
+
     const out = await tap();
     if (out) {
+      forge.onDropResolved();
       if (!endlessRef.current) session.recordTapCommitted();
     }
     return !!out;
-  }, [tap, session.recordTapCommitted]);
+  }, [tap, forge.advanceForge, forge.onDropResolved, session.recordTapCommitted]);
 
   const manualTap = useCallback(async () => {
     await runTap();
@@ -46,6 +54,7 @@ export function useTapFlow() {
         flushSync(() => reset());
       }
       void (async () => {
+        forge.fastForwardToThreshold();
         await runTap();
       })();
     }, ms);
@@ -58,6 +67,7 @@ export function useTapFlow() {
     session.lastTapAt,
     reset,
     runTap,
+    forge.fastForwardToThreshold,
   ]);
 
   return {
