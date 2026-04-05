@@ -10,6 +10,7 @@ import type {
 import type { ProgressionSnapshot, PlayerProgressionPayload } from '@entities/progression';
 import { MAX_LEVEL } from '@entities/progression';
 import {
+  CORE_GEAR_SLOTS,
   GEAR_SLOTS,
   MAX_GEAR_DURABILITY,
   MAX_INVENTORY_SLOTS,
@@ -148,6 +149,7 @@ export function useGearDressing() {
         rarity,
         durability: MAX_GEAR_DURABILITY,
         maxDurability: MAX_GEAR_DURABILITY,
+        catalogId: drop.catalogId,
       };
       let crit = prev.critChanceFromTaps;
       if (Math.random() < CRIT_TAP_PROC_CHANCE) {
@@ -186,6 +188,7 @@ export function useGearDressing() {
         rarity,
         durability: MAX_GEAR_DURABILITY,
         maxDurability: MAX_GEAR_DURABILITY,
+        catalogId: drop.catalogId,
       };
       let crit = prev.critChanceFromTaps;
       if (Math.random() < CRIT_TAP_PROC_CHANCE) {
@@ -252,10 +255,10 @@ export function useGearDressing() {
 
   const prepareRandomBattle = useCallback(async () => {
     const snap = gearRef.current;
-    for (const slot of GEAR_SLOTS) {
+    for (const slot of CORE_GEAR_SLOTS) {
       if (!snap.equipped[slot]) return;
     }
-    if (!GEAR_SLOTS.every((s) => (snap.equipped[s]?.durability ?? 0) >= 1)) return;
+    if (!CORE_GEAR_SLOTS.every((s) => (snap.equipped[s]?.durability ?? 0) >= 1)) return;
 
     setBattlePreparing(true);
     try {
@@ -284,7 +287,7 @@ export function useGearDressing() {
 
   const prepareSparBattle = useCallback(async () => {
     const snap = gearRef.current;
-    for (const slot of GEAR_SLOTS) {
+    for (const slot of CORE_GEAR_SLOTS) {
       if (!snap.equipped[slot]) return;
     }
 
@@ -339,7 +342,7 @@ export function useGearDressing() {
         let next = applySnapshot(cur, res);
         if (battleKind === 'random' && equipMatches(cur.equipped, snap.equipped)) {
           const equipped = { ...next.equipped };
-          for (const slot of GEAR_SLOTS) {
+          for (const slot of CORE_GEAR_SLOTS) {
             const item = equipped[slot]!;
             const nextDur = item.durability - 1;
             if (nextDur <= 0) equipped[slot] = null;
@@ -365,13 +368,13 @@ export function useGearDressing() {
   const dismissLastBattle = useCallback(() => setLastBattle(null), []);
 
   const isFullyEquipped = useMemo(
-    () => GEAR_SLOTS.every((s) => state.equipped[s] != null),
+    () => CORE_GEAR_SLOTS.every((s) => state.equipped[s] != null),
     [state.equipped],
   );
 
   const canBattle = useMemo(() => {
     if (!isFullyEquipped) return false;
-    return GEAR_SLOTS.every((s) => (state.equipped[s]?.durability ?? 0) >= 1);
+    return CORE_GEAR_SLOTS.every((s) => (state.equipped[s]?.durability ?? 0) >= 1);
   }, [isFullyEquipped, state.equipped]);
 
   const canSpar = isFullyEquipped;

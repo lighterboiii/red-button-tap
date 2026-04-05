@@ -70,6 +70,7 @@ export async function postCombatPreview(
 }
 
 export async function postCombatItemStats(body: {
+  catalogId: string;
   slot: GearSlot;
   rarity: Rarity;
 }): Promise<ItemCombatStats> {

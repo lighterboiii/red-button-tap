@@ -1,27 +1,15 @@
 /** @typedef {'common' | 'uncommon' | 'rare' | 'legendary'} Rarity */
 
-/** Шансы по редкости (сумма = 1). Тексты карточек не показываются — в ответе только дроп. */
+/**
+ * Шансы по редкости брони (сумма ≈ 1 за вычетом бижутерии).
+ * Легендарная броня — очень редко; бижутерия — отдельный крошечный бросок в rng.
+ */
 export const RARITY_WEIGHTS = {
-  common: 0.72,
-  uncommon: 0.2,
-  rare: 0.065,
-  legendary: 0.015,
+  common: 0.56,
+  uncommon: 0.28,
+  rare: 0.13,
+  legendary: 0.0295,
 };
 
-/** Пулы id для rng; подписи не используются в API (подменяются в index на имя вещи). */
-export const POOLS = {
-  common: [
-    { id: 'c1', label: '', message: '' },
-    { id: 'c2', label: '', message: '' },
-    { id: 'c3', label: '', message: '' },
-  ],
-  uncommon: [
-    { id: 'u1', label: '', message: '' },
-    { id: 'u2', label: '', message: '' },
-  ],
-  rare: [
-    { id: 'r1', label: '', message: '' },
-    { id: 'r2', label: '', message: '' },
-  ],
-  legendary: [{ id: 'l1', label: '', message: '' }],
-};
+/** Вероятность отдельного броска «выпала бижутерия» (1 из 4 легендарных аксессуаров). */
+export const JEWELRY_DROP_WEIGHT = 0.0008;

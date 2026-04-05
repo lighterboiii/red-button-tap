@@ -5,6 +5,8 @@
     "dev": "npm run dev --prefix frontend",
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
+    "ngrok:api": "ngrok http 3001",
+    "ngrok:web": "ngrok http 5173",
     "build": "npm run build --prefix frontend",
     "start:backend": "npm run start --prefix backend"
   }

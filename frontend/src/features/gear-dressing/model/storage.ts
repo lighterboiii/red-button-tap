@@ -2,14 +2,21 @@ import { GEAR_SLOTS, MAX_INVENTORY_SLOTS, type GearItem, type GearSlot } from '@
 import { MAX_LEVEL } from '@entities/progression';
 import { todayKey } from '@features/tap-session/model/storage';
 
-const KEY = 'buttoff_gear_v6';
+const KEY = 'buttoff_gear_v7';
 
-const LEGACY_KEYS = ['buttoff_gear_v5', 'buttoff_gear_v4', 'buttoff_gear_v3', 'buttoff_gear_v2', 'buttoff_gear_v1'] as const;
+const LEGACY_KEYS = [
+  'buttoff_gear_v6',
+  'buttoff_gear_v5',
+  'buttoff_gear_v4',
+  'buttoff_gear_v3',
+  'buttoff_gear_v2',
+  'buttoff_gear_v1',
+] as const;
 
 const XP_TAP_CAP = 15;
 
 export type GearDressingStored = {
-  v: 6;
+  v: 7;
   dayKey: string;
   level: number;
   xp: number;
@@ -29,13 +36,14 @@ export function emptyEquipped(): Record<GearSlot, GearItem | null> {
     shield: null,
     shoulders: null,
     chest: null,
+    jewelry: null,
   };
 }
 
 function defaultState(): GearDressingStored {
   const day = todayKey();
   return {
-    v: 6,
+    v: 7,
     dayKey: day,
     level: 1,
     xp: 0,
@@ -91,7 +99,8 @@ type ParsedV4 = {
   critChanceFromTaps?: unknown;
 };
 
-function migrateV5ToV6(parsed: ParsedV4 & Record<string, unknown>, dayKey: string): GearDressingStored {
+/** Миграция v4–v6 → v7 (слот бижутерии). */
+function migrateToStored(parsed: ParsedV4 & Record<string, unknown>, dayKey: string): GearDressingStored {
   const equipped = emptyEquipped();
   for (const slot of GEAR_SLOTS) {
     const e = parsed.equipped?.[slot];
@@ -106,7 +115,7 @@ function migrateV5ToV6(parsed: ParsedV4 & Record<string, unknown>, dayKey: strin
       : 0;
   const pv = parsed as Partial<GearDressingStored>;
   return softClamp({
-    v: 6,
+    v: 7,
     dayKey,
     level: typeof pv.level === 'number' ? pv.level : 1,
     xp: typeof pv.xp === 'number' ? pv.xp : 0,
@@ -137,8 +146,12 @@ export function loadGearDressing(): GearDressingStored {
     if (raw) {
       const parsed = JSON.parse(raw) as ParsedV4 & { v?: number };
 
-      if (parsed.v === 6 && parsed.dayKey && typeof parsed.dayKey === 'string') {
-        const s = migrateV5ToV6(parsed as Record<string, unknown>, parsed.dayKey);
+      if (
+        (parsed.v === 6 || parsed.v === 7) &&
+        parsed.dayKey &&
+        typeof parsed.dayKey === 'string'
+      ) {
+        const s = migrateToStored(parsed as Record<string, unknown>, parsed.dayKey);
         const out = applyNewDay(s);
         saveGearDressing(out);
         if (legacyKey) {
@@ -153,7 +166,7 @@ export function loadGearDressing(): GearDressingStored {
       }
 
       if (parsed.v === 5 && parsed.dayKey && typeof parsed.dayKey === 'string') {
-        let s = migrateV5ToV6(parsed as Record<string, unknown>, parsed.dayKey);
+        let s = migrateToStored(parsed as Record<string, unknown>, parsed.dayKey);
         s = applyNewDay(s);
         saveGearDressing(s);
         if (legacyKey) {
@@ -168,7 +181,7 @@ export function loadGearDressing(): GearDressingStored {
       }
 
       if (parsed.v === 4 && parsed.dayKey && typeof parsed.dayKey === 'string') {
-        let s = migrateV5ToV6(parsed as Record<string, unknown>, parsed.dayKey);
+        let s = migrateToStored(parsed as Record<string, unknown>, parsed.dayKey);
         s = applyNewDay(s);
         saveGearDressing(s);
         if (legacyKey) {

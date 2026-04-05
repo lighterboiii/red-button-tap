@@ -50,7 +50,11 @@ export function TapPanel({
     setDropStats(null);
     void (async () => {
       try {
-        const s = await postCombatItemStats({ slot: result.drop.slot, rarity: result.rarity });
+        const s = await postCombatItemStats({
+          catalogId: result.drop.catalogId,
+          slot: result.drop.slot,
+          rarity: result.rarity,
+        });
         if (!cancelled) setDropStats(s);
       } catch {
         if (!cancelled) setDropStats(null);

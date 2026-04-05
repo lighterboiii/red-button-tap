@@ -80,9 +80,19 @@ function buildPlayerHitLine(m, enemyHpAfter, spar) {
   return { side: 'player', fragments, text: fragmentsToText(fragments) };
 }
 
-function buildEnemyHitLine(m, enemy, playerHpAfter, spar) {
+function buildEnemyHitLine(m, enemy, playerHpAfter, spar, blocked) {
   const arm = Math.round(m.armorFromPlayerDefense);
   const name = spar ? 'Манекен' : enemy.name;
+  if (blocked) {
+    const fragments = [
+      { type: 'plain', text: `${name} бьёт, но бижутерия полностью отводит удар — ` },
+      { type: 'damage', value: 0 },
+      { type: 'plain', text: ` урона. У тебя остаётся ` },
+      { type: 'hp', value: playerHpAfter },
+      { type: 'plain', text: ' HP.' },
+    ];
+    return { side: 'enemy', fragments, text: fragmentsToText(fragments) };
+  }
   const fragments = [
     { type: 'plain', text: `${name} наносит тебе ` },
     { type: 'damage', value: m.dmg },
@@ -95,53 +105,95 @@ function buildEnemyHitLine(m, enemy, playerHpAfter, spar) {
   return { side: 'enemy', fragments, text: fragmentsToText(fragments) };
 }
 
+/**
+ * @param {object} stats — из computeCombatStats; доп. поля jewelry*
+ * @param {number} critChanceFromTaps
+ */
 function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind, playerMaxHp) {
   let playerHp = playerMaxHp;
   let enemyHp = enemy.hp;
   const rounds = [];
 
-  const critChanceTotal = Math.min(TOTAL_CRIT_CAP, stats.critFromGear + critChanceFromTaps);
+  const mercyChance = stats.jewelryMercyChance ?? 0;
+  const critFlat = stats.jewelryCritFlat ?? 0;
+  const triad = Boolean(stats.jewelryTriad);
+  const blockChance = stats.jewelryBlockChance ?? 0;
+
+  const critChanceTotal = Math.min(
+    TOTAL_CRIT_CAP,
+    stats.critFromGear + critChanceFromTaps + critFlat,
+  );
 
   const playerHpStart = playerHp;
   const enemyHpStart = enemy.hp;
 
   const spar = battleKind === 'spar';
 
+  /** Сердце эха заката — редкая мгновенная победа */
+  if (mercyChance > 0 && Math.random() < mercyChance) {
+    const winText = spar
+      ? 'Сердце эха заката сжимается — и манекен рассыпается прахом по сигналу судьбы.'
+      : 'Сердце эха заката сияет: судьба вручает тебе победу, пока враг ещё не успел идти.';
+
+    rounds.push({
+      round: 1,
+      side: 'neutral',
+      text: winText,
+      fragments: [{ type: 'plain', text: winText }],
+    });
+
+    return {
+      won: true,
+      rounds,
+      playerHpStart,
+      playerHpEnd: playerHp,
+      enemyHpStart,
+      enemyHpEnd: 0,
+      enemy,
+      battleKind,
+    };
+  }
+
   let round = 0;
   while (round < BATTLE_MAX_ROUNDS && playerHp > 0 && enemyHp > 0) {
     round += 1;
 
-    const crit = Math.random() < critChanceTotal;
-    const swingP = rollSwingMultiplier();
-    const ps = computePlayerStrikeDamage(stats.attack, enemy.defense, enemyHp, crit, swingP);
-    enemyHp -= ps.dmg;
+    const playerHits = triad ? 3 : 1;
+    for (let h = 0; h < playerHits && enemyHp > 0; h += 1) {
+      const crit = Math.random() < critChanceTotal;
+      const swingP = rollSwingMultiplier();
+      const ps = computePlayerStrikeDamage(stats.attack, enemy.defense, enemyHp, crit, swingP);
+      enemyHp -= ps.dmg;
 
-    const pl = buildPlayerHitLine(ps, enemyHp <= 0 ? 0 : enemyHp, spar);
-    rounds.push({
-      round,
-      side: pl.side,
-      text: pl.text,
-      fragments: pl.fragments,
-    });
+      const pl = buildPlayerHitLine(ps, enemyHp <= 0 ? 0 : enemyHp, spar);
+      rounds.push({
+        round,
+        side: pl.side,
+        text: triad && playerHits > 1 ? `${pl.text} (${h + 1}/${playerHits})` : pl.text,
+        fragments: pl.fragments,
+      });
 
-    if (enemyHp <= 0) {
-      return {
-        won: true,
-        rounds,
-        playerHpStart,
-        playerHpEnd: playerHp,
-        enemyHpStart,
-        enemyHpEnd: 0,
-        enemy,
-        battleKind,
-      };
+      if (enemyHp <= 0) {
+        return {
+          won: true,
+          rounds,
+          playerHpStart,
+          playerHpEnd: playerHp,
+          enemyHpStart,
+          enemyHpEnd: 0,
+          enemy,
+          battleKind,
+        };
+      }
     }
 
     const swingE = rollSwingMultiplier();
     const es = computeEnemyStrikeDamage(enemy.attack, stats.defense, playerHp, swingE);
-    playerHp -= es.dmg;
+    const blocked = blockChance > 0 && Math.random() < blockChance;
+    const dmg = blocked ? 0 : es.dmg;
+    playerHp -= dmg;
 
-    const el = buildEnemyHitLine(es, enemy, playerHp <= 0 ? 0 : playerHp, spar);
+    const el = buildEnemyHitLine(es, enemy, playerHp <= 0 ? 0 : playerHp, spar, blocked);
     rounds.push({
       round,
       side: el.side,

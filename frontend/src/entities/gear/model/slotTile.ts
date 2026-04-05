@@ -7,6 +7,7 @@ export const SLOT_TILE_GLYPH: Record<GearSlot, string> = {
   shield: '🛡',
   shoulders: '◇',
   chest: '◆',
+  jewelry: '✧',
 };
 
 export function critPctShort(crit: number): string {

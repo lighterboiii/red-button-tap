@@ -1,4 +1,5 @@
-import { RARITY_WEIGHTS, POOLS } from './outcomes.js';
+import { JEWELRY_DROP_WEIGHT, RARITY_WEIGHTS } from './outcomes.js';
+import { rollDrop, rollJewelryDrop } from './drops.js';
 
 function pickRarity() {
   const r = Math.random();
@@ -11,30 +12,31 @@ function pickRarity() {
   return 'common';
 }
 
-/** common: c1/c2 чаще, «тишина» c3 — реже. */
-function pickCommonCard() {
-  const [c1, c2, c3] = POOLS.common;
-  const r = Math.random();
-  if (r < 0.42) return c1;
-  if (r < 0.84) return c2;
-  return c3;
+function newTapId(prefix) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function pickFromPool(rarity) {
-  if (rarity === 'common') return pickCommonCard();
-  const pool = POOLS[rarity];
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-/** Один «тап» — одна выпавшая редкость + карточка из пула. */
+/** Один тап — редкость, дроп из каталога; редко выпадает бижутерия. */
 export function rollTap() {
+  if (Math.random() < JEWELRY_DROP_WEIGHT) {
+    const drop = rollJewelryDrop();
+    return {
+      id: newTapId('jw'),
+      rarity: /** @type {'legendary'} */ ('legendary'),
+      approximateChance: JEWELRY_DROP_WEIGHT,
+      drop,
+      isJewelry: true,
+    };
+  }
+
   const rarity = pickRarity();
-  const card = pickFromPool(rarity);
+  const drop = rollDrop(rarity);
   const weight = RARITY_WEIGHTS[rarity];
   return {
-    ...card,
+    id: newTapId(rarity),
     rarity,
-    /** Доля 0–1 для отображения «~X%» */
     approximateChance: weight,
+    drop,
+    isJewelry: false,
   };
 }

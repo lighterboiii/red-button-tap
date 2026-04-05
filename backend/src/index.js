@@ -2,7 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { rollTap } from './rng.js';
-import { rollDrop, SLOT_LABEL_RU } from './drops.js';
+import { CORE_GEAR_SLOTS, GEAR_SLOTS, SLOT_LABEL_RU } from './drops.js';
+import { getCatalogEntry } from './itemCatalog.js';
 import { telegramAuthMiddleware } from './telegramMiddleware.js';
 import { computeCombatStats, computeItemCombatStats, computeItemStatsMap } from './combat/computeStats.js';
 import { TOTAL_CRIT_CAP } from './combat/constants.js';
@@ -25,7 +26,6 @@ import {
 const app = express();
 const PORT = process.env.PORT ?? 3001;
 
-const GEAR_SLOTS = ['head', 'sword', 'shield', 'shoulders', 'chest'];
 const RARITIES = ['common', 'uncommon', 'rare', 'legendary'];
 
 function sanitizeEquipped(raw) {
@@ -76,7 +76,7 @@ app.get('/api/me', telegramAuthMiddleware, (req, res) => {
 
 app.post('/api/tap', telegramAuthMiddleware, (_req, res) => {
   const result = rollTap();
-  const drop = rollDrop(result.rarity);
+  const { drop } = result;
 
   res.json({
     id: result.id,
@@ -120,7 +120,10 @@ app.post('/api/combat/preview', telegramAuthMiddleware, (req, res) => {
       typeof crit === 'number' && Number.isFinite(crit) ? Math.min(1, Math.max(0, crit)) : 0;
 
     const combatStats = computeCombatStats(equipped);
-    const totalCritChance = Math.min(TOTAL_CRIT_CAP, combatStats.critFromGear + critChanceFromTaps);
+    const totalCritChance = Math.min(
+      TOTAL_CRIT_CAP,
+      combatStats.critFromGear + critChanceFromTaps + (combatStats.jewelryCritFlat ?? 0),
+    );
 
     const items = [...inventory];
     for (const s of GEAR_SLOTS) {
@@ -138,6 +141,24 @@ app.post('/api/combat/preview', telegramAuthMiddleware, (req, res) => {
 /** Статы одной вещи по слоту и редкости (карточка дропа с тапа) */
 app.post('/api/combat/item-stats', telegramAuthMiddleware, (req, res) => {
   try {
+    const catalogId = req.body?.catalogId;
+    if (typeof catalogId === 'string' && catalogId.trim() !== '') {
+      const entry = getCatalogEntry(catalogId.trim());
+      if (!entry) {
+        return res.status(400).json({ error: 'unknown_catalog' });
+      }
+      const stats = computeItemCombatStats({
+        id: '_',
+        slot: entry.slot,
+        rarity: entry.rarity,
+        catalogId: entry.id,
+        label: entry.label,
+        durability: 1,
+        maxDurability: 1,
+      });
+      return res.json(stats);
+    }
+
     const slot = req.body?.slot;
     const rarity = req.body?.rarity;
     if (!GEAR_SLOTS.includes(slot) || !RARITIES.includes(rarity)) {
@@ -167,14 +188,14 @@ app.post('/api/battle/opponent', telegramAuthMiddleware, (req, res) => {
     }
     const equipped = sanitizeEquipped(req.body?.equipped);
 
-    for (const s of GEAR_SLOTS) {
+    for (const s of CORE_GEAR_SLOTS) {
       if (!equipped[s]) {
         return res.status(400).json({ error: 'slot_empty' });
       }
     }
 
     if (battleKind === 'random') {
-      for (const s of GEAR_SLOTS) {
+      for (const s of CORE_GEAR_SLOTS) {
         if ((equipped[s].durability ?? 0) < 1) {
           return res.status(400).json({ error: 'durability_low' });
         }
@@ -204,14 +225,14 @@ app.post('/api/battle', telegramAuthMiddleware, (req, res) => {
     const critChanceFromTaps =
       typeof crit === 'number' && Number.isFinite(crit) ? Math.min(1, Math.max(0, crit)) : 0;
 
-    for (const s of GEAR_SLOTS) {
+    for (const s of CORE_GEAR_SLOTS) {
       if (!equipped[s]) {
         return res.status(400).json({ error: 'slot_empty' });
       }
     }
 
     if (battleKind === 'random') {
-      for (const s of GEAR_SLOTS) {
+      for (const s of CORE_GEAR_SLOTS) {
         if ((equipped[s].durability ?? 0) < 1) {
           return res.status(400).json({ error: 'durability_low' });
         }
