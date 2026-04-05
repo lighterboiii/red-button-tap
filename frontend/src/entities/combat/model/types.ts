@@ -5,9 +5,21 @@ export type EnemyProfile = {
   defense: number;
 };
 
+/** Кусок строки журнала для раскраски чисел */
+export type BattleLogFragment =
+  | { type: 'plain'; text: string }
+  | { type: 'damage'; value: number }
+  | { type: 'block'; value: number }
+  | { type: 'hp'; value: number };
+
 export type BattleRoundLine = {
   round: number;
+  /** Кто инициатор строки: твой ход / ответ врага / итог раунда */
+  side?: 'player' | 'enemy' | 'neutral';
+  /** Плоский текст (копирование, aria, старые клиенты) */
   text: string;
+  /** Разметка для UI; если нет — показываем только text */
+  fragments?: BattleLogFragment[];
 };
 
 export type BattleKind = 'random' | 'spar';

@@ -1,5 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import type { BattleIntroState, BattleOutcome, CombatStats, ItemCombatStats } from '@entities/combat';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type {
+  BattleIntroState,
+  BattleLogFragment,
+  BattleOutcome,
+  BattleRoundLine,
+  CombatStats,
+  ItemCombatStats,
+} from '@entities/combat';
 import { GEAR_SLOTS, GEAR_SLOT_LABELS, type GearItem, type GearSlot } from '@entities/gear';
 
 /** Пауза перед первой строкой журнала — «заводится» бой */
@@ -46,6 +53,47 @@ function ItemCombatLine({ stats }: { stats: ItemCombatStats }) {
       Атк {stats.attack} · Защ {stats.defense} · Крит {formatCritPct(stats.critChance)}
     </span>
   );
+}
+
+function renderBattleLineFragments(line: BattleRoundLine): ReactNode {
+  const fr = line.fragments;
+  if (!fr?.length) return line.text;
+
+  const side = line.side ?? 'neutral';
+
+  return fr.map((f: BattleLogFragment, i: number) => {
+    if (f.type === 'plain') {
+      return <span key={i}>{f.text}</span>;
+    }
+    if (f.type === 'damage') {
+      const dmgClass =
+        side === 'player'
+          ? 'character-panel__battle-log-dmg character-panel__battle-log-dmg--ally'
+          : side === 'enemy'
+            ? 'character-panel__battle-log-dmg character-panel__battle-log-dmg--foe'
+            : 'character-panel__battle-log-dmg';
+      return (
+        <span key={i} className={dmgClass}>
+          {f.value}
+        </span>
+      );
+    }
+    if (f.type === 'block') {
+      return (
+        <span key={i} className="character-panel__battle-log-block">
+          {f.value}
+        </span>
+      );
+    }
+    if (f.type === 'hp') {
+      return (
+        <span key={i} className="character-panel__battle-log-hp">
+          {f.value}
+        </span>
+      );
+    }
+    return null;
+  });
 }
 
 export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
@@ -373,11 +421,21 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
               </h3>
             ) : null}
             <ul className="character-panel__battle-log" aria-live="polite" aria-relevant="additions">
-              {lastBattle.rounds.slice(0, battleLogRevealed).map((r, i) => (
-                <li key={`${lastBattle.enemy.name}-${r.round}-${i}`} className="character-panel__battle-log-line">
-                  {r.text}
-                </li>
-              ))}
+              {lastBattle.rounds.slice(0, battleLogRevealed).map((r, i) => {
+                const side = r.side ?? 'neutral';
+                return (
+                  <li
+                    key={`${lastBattle.enemy.name}-${r.round}-${i}`}
+                    className={[
+                      'character-panel__battle-log-line',
+                      `character-panel__battle-log-line--${side}`,
+                    ].join(' ')}
+                    aria-label={r.text}
+                  >
+                    {renderBattleLineFragments(r)}
+                  </li>
+                );
+              })}
             </ul>
             {!battleLogComplete ? (
               <p className="character-panel__battle-pulse" aria-hidden>

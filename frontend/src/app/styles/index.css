@@ -923,6 +923,69 @@ body {
   animation: character-panel-battle-line-in 0.42s ease-out both;
 }
 
+.character-panel__battle-log-line--player {
+  color: #e8e4dc;
+  border-left: 2px solid rgba(240, 180, 80, 0.55);
+  padding-left: 0.45rem;
+  margin-left: -0.45rem;
+}
+
+.character-panel__battle-log-line--enemy {
+  color: #e8dce0;
+  border-left: 2px solid rgba(220, 90, 90, 0.55);
+  padding-left: 0.45rem;
+  margin-left: -0.45rem;
+}
+
+.character-panel__battle-log-line--neutral {
+  color: #b8b8c8;
+  font-style: italic;
+}
+
+.character-panel__battle-log-dmg {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.character-panel__battle-log-dmg--ally {
+  color: #f4c86a;
+  text-shadow: 0 0 12px rgba(240, 180, 80, 0.35);
+}
+
+.character-panel__battle-log-dmg--foe {
+  color: #ff6b6b;
+  text-shadow: 0 0 12px rgba(220, 80, 80, 0.4);
+}
+
+.character-panel__battle-log-block {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #8ec8dc;
+}
+
+.character-panel__battle-log-line--enemy .character-panel__battle-log-block {
+  color: #c8a8b8;
+}
+
+.character-panel__battle-log-hp {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #c8e8b8;
+}
+
+.character-panel__battle-log-line--enemy .character-panel__battle-log-hp {
+  color: #e8d8c8;
+}
+
+.character-panel__battle-sheet--spar .character-panel__battle-log-line--player {
+  border-left-color: rgba(80, 210, 195, 0.55);
+}
+
+.character-panel__battle-sheet--spar .character-panel__battle-log-dmg--ally {
+  color: #7ee8d8;
+  text-shadow: 0 0 12px rgba(80, 220, 200, 0.35);
+}
+
 @keyframes character-panel-battle-line-in {
   from {
     opacity: 0;

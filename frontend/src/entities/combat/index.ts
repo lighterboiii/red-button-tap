@@ -1,6 +1,7 @@
 export type {
   BattleIntroState,
   BattleKind,
+  BattleLogFragment,
   BattleOpponentResponse,
   BattleOutcome,
   BattleRoundLine,

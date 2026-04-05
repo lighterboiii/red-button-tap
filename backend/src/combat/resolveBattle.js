@@ -45,18 +45,59 @@ export function isSparEnemy(e) {
   );
 }
 
-function formatPlayerHitLine(m, enemyHpAfter, spar) {
-  const arm = Math.round(m.armorFromEnemyDefense);
-  const who = spar ? 'манекена' : 'врага';
-  const critPart = m.crit ? 'Крит! ' : '';
-  const target = spar ? 'манекена' : 'врага';
-  return `Твой удар: ${critPart}урон ${m.dmg} (броня ${who} −${arm}). HP ${target}: ${enemyHpAfter}.`;
+function fragmentsToText(fragments) {
+  return fragments
+    .map((f) => {
+      if (f.type === 'plain') return f.text;
+      return String(f.value);
+    })
+    .join('');
 }
 
-function formatEnemyHitLine(m, enemy, playerHpAfter, spar) {
+/** Удар игрока — стиль журнала «Герои ММ», без лишних формул */
+function buildPlayerHitLine(m, enemyHpAfter, spar) {
+  const arm = Math.round(m.armorFromEnemyDefense);
+  const fragments = [];
+  if (m.crit) {
+    fragments.push({ type: 'plain', text: 'Критический удар! ' });
+  }
+  if (spar) {
+    fragments.push(
+      { type: 'plain', text: 'Ты наносишь манекену ' },
+      { type: 'damage', value: m.dmg },
+      { type: 'plain', text: ' урона. Манекен гасит ' },
+      { type: 'block', value: arm },
+      { type: 'plain', text: '. У манекена остаётся ' },
+      { type: 'hp', value: enemyHpAfter },
+      { type: 'plain', text: ' HP.' },
+    );
+  } else {
+    fragments.push(
+      { type: 'plain', text: 'Ты наносишь по врагу ' },
+      { type: 'damage', value: m.dmg },
+      { type: 'plain', text: ' урона. Вражеская броня поглощает ' },
+      { type: 'block', value: arm },
+      { type: 'plain', text: '. У противника остаётся ' },
+      { type: 'hp', value: enemyHpAfter },
+      { type: 'plain', text: ' HP.' },
+    );
+  }
+  return { side: 'player', fragments, text: fragmentsToText(fragments) };
+}
+
+function buildEnemyHitLine(m, enemy, playerHpAfter, spar) {
   const arm = Math.round(m.armorFromPlayerDefense);
-  const who = spar ? 'Манекен' : enemy.name;
-  return `${who}: урон ${m.dmg} (твоя броня −${arm}). Твои HP: ${playerHpAfter}.`;
+  const name = spar ? 'Манекен' : enemy.name;
+  const fragments = [
+    { type: 'plain', text: `${name} наносит тебе ` },
+    { type: 'damage', value: m.dmg },
+    { type: 'plain', text: ' урона. Твоя броня поглощает ' },
+    { type: 'block', value: arm },
+    { type: 'plain', text: '. У тебя остаётся ' },
+    { type: 'hp', value: playerHpAfter },
+    { type: 'plain', text: ' HP.' },
+  ];
+  return { side: 'enemy', fragments, text: fragmentsToText(fragments) };
 }
 
 function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind) {
@@ -80,9 +121,12 @@ function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind) {
     const ps = computePlayerStrikeDamage(stats.attack, enemy.defense, enemyHp, crit, swingP);
     enemyHp -= ps.dmg;
 
+    const pl = buildPlayerHitLine(ps, enemyHp <= 0 ? 0 : enemyHp, spar);
     rounds.push({
       round,
-      text: formatPlayerHitLine(ps, enemyHp <= 0 ? 0 : enemyHp, spar),
+      side: pl.side,
+      text: pl.text,
+      fragments: pl.fragments,
     });
 
     if (enemyHp <= 0) {
@@ -102,9 +146,12 @@ function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind) {
     const es = computeEnemyStrikeDamage(enemy.attack, stats.defense, playerHp, swingE);
     playerHp -= es.dmg;
 
+    const el = buildEnemyHitLine(es, enemy, playerHp <= 0 ? 0 : playerHp, spar);
     rounds.push({
       round,
-      text: formatEnemyHitLine(es, enemy, playerHp <= 0 ? 0 : playerHp, spar),
+      side: el.side,
+      text: el.text,
+      fragments: el.fragments,
     });
 
     if (playerHp <= 0) {
@@ -122,15 +169,18 @@ function resolveBattleCore(stats, critChanceFromTaps, enemy, battleKind) {
   }
 
   const won = playerHp > enemyHp;
+  const endText = spar
+    ? won
+      ? 'Сигнал тренера — стоп, манекен «отключён».'
+      : 'Перерыв: манекен ещё стоит — можно подлечиться и зайти снова.'
+    : won
+      ? 'Враг отступает с поля боя.'
+      : 'Ты отступаешь — бой окончен.';
   rounds.push({
     round: round + 1,
-    text: spar
-      ? won
-        ? 'Сигнал тренера — стоп, манекен «отключён».'
-        : 'Перерыв: манекен ещё стоит — можно подлечиться и зайти снова.'
-      : won
-        ? 'Враг отступает.'
-        : 'Ты на пределе — отход.',
+    side: 'neutral',
+    text: endText,
+    fragments: [{ type: 'plain', text: endText }],
   });
 
   return {
