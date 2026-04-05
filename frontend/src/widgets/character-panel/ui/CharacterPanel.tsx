@@ -20,6 +20,25 @@ const BATTLE_LOG_STEP_MS = 560;
 /** Автостарт боя после экрана «встреча» */
 const BATTLE_INTRO_AUTO_SEC = 10;
 
+/** Векторное сердце (SVG), не эмодзи — для подписей HP */
+function HpHeartIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      aria-hidden
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+      />
+    </svg>
+  );
+}
+
 type Props = {
   avatarUrl?: string | null;
   displayName?: string | null;
@@ -233,8 +252,13 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
       <div className="character-panel__level-block" aria-label="Уровень и опыт">
         <div className="character-panel__level-row">
           <span className="character-panel__level-label">Уровень {level}</span>
-          <span className="character-panel__level-hp-hint" title="Макс. HP в бою">
-            HP {playerMaxHp}
+          <span
+            className="character-panel__level-hp-hint"
+            title="Макс. HP в бою"
+            aria-label={`Макс. HP в бою: ${playerMaxHp}`}
+          >
+            <HpHeartIcon className="character-panel__hp-heart" />
+            <span className="character-panel__hp-hint-value">{playerMaxHp}</span>
           </span>
         </div>
         {atMaxLevel ? (
@@ -350,7 +374,10 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
               <p className="character-panel__battle-intro-name">{battleIntro.enemy.name}</p>
               <dl className="character-panel__battle-intro-dl">
                 <div>
-                  <dt>HP</dt>
+                  <dt className="character-panel__battle-intro-dt-hp">
+                    <HpHeartIcon className="character-panel__hp-heart character-panel__hp-heart--dt" />
+                    HP
+                  </dt>
                   <dd>{battleIntro.enemy.hp}</dd>
                 </div>
                 <div>
@@ -367,7 +394,10 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
               <p className="character-panel__battle-intro-label">Ты</p>
               <dl className="character-panel__battle-intro-dl">
                 <div>
-                  <dt>HP</dt>
+                  <dt className="character-panel__battle-intro-dt-hp">
+                    <HpHeartIcon className="character-panel__hp-heart character-panel__hp-heart--dt" />
+                    HP
+                  </dt>
                   <dd>{battleIntro.playerHp}</dd>
                 </div>
                 <div>
@@ -499,9 +529,16 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
                     lastBattle.won ? 'win' : 'loss'
                   }`}
                 >
-                  Твой HP: {lastBattle.playerHpStart} → {lastBattle.playerHpEnd} ·{' '}
-                  {lastBattle.battleKind === 'spar' ? 'Манекен' : 'Враг'}: {lastBattle.enemyHpStart} →{' '}
-                  {lastBattle.enemyHpEnd}
+                  <span className="character-panel__battle-summary-hp">
+                    <HpHeartIcon className="character-panel__hp-heart character-panel__hp-heart--summary" />
+                    Твой HP: {lastBattle.playerHpStart} → {lastBattle.playerHpEnd}
+                  </span>
+                  {' · '}
+                  <span className="character-panel__battle-summary-hp">
+                    <HpHeartIcon className="character-panel__hp-heart character-panel__hp-heart--summary" />
+                    {lastBattle.battleKind === 'spar' ? 'Манекен' : 'Враг'}: {lastBattle.enemyHpStart} →{' '}
+                    {lastBattle.enemyHpEnd}
+                  </span>
                 </p>
               </div>
             ) : null}

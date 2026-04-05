@@ -50,7 +50,7 @@ export function GearBottomSection({ gear, tab, onTabChange, avatarUrl, displayNa
           className={`gear-dock__tab ${tab === 'slots' ? 'gear-dock__tab--active' : ''}`}
           onClick={() => onTabChange('slots')}
         >
-          Кнопка
+          Добыча
         </button>
         <button
           type="button"

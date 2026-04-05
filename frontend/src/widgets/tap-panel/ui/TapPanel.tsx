@@ -96,8 +96,8 @@ export function TapPanel({
   };
 
   return (
-    <section className="tap-panel" aria-label="Тап">
-      <h1 className="tap-panel__sr-only">Тап</h1>
+    <section className="tap-panel" aria-label="Добыча">
+      <h1 className="tap-panel__sr-only">Добыча</h1>
 
       <div className="tap-panel__button-wrap">
         <TapButton disabled={buttonDisabled} rolling={rolling} onTap={manualTap} />
@@ -124,8 +124,13 @@ export function TapPanel({
       {showResult && result ? (
         <div className={outcomeClass(result.rarity)}>
           <div className="tap-panel__drop-card">
-            <div className="tap-panel__drop-icon-wrap" aria-hidden>
-              <span className="tap-panel__drop-icon">{SLOT_TILE_GLYPH[result.drop.slot]}</span>
+            <div
+              className={`tap-panel__drop-icon-wrap tap-panel__drop-icon-wrap--${result.rarity}`}
+              aria-hidden
+            >
+              <span className={`tap-panel__drop-icon tap-panel__drop-icon--${result.rarity}`}>
+                {SLOT_TILE_GLYPH[result.drop.slot]}
+              </span>
             </div>
             <div className="tap-panel__drop-main">
               <div className="tap-panel__rarity-row">

@@ -11,7 +11,7 @@ type Props = {
   slot: GearSlot;
   item: GearItem | null;
   stats: ItemCombatStats | null;
-  /** Кнопка: снять слот / открыть карточку в инвентаре */
+  /** Плитка: снять слот / открыть карточку в инвентаре */
   onActivate?: () => void;
   /** Как озвучить кнопку для a11y */
   action?: EquipTileAction;
