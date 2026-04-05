@@ -1,5 +1,6 @@
 import { RARITY_META } from '@entities/outcome';
 import type { TapResult } from '@entities/outcome';
+import { GEAR_SLOT_LABELS } from '@entities/gear';
 import { TapButton, useTapFlow } from '@features/tap-action';
 import { formatCooldownMs } from '@shared/lib/formatCooldown';
 
@@ -8,11 +9,14 @@ function outcomeClass(rarity: TapResult['rarity']) {
 }
 
 type Props = {
-  onSuccessfulTap?: (result: TapResult) => void;
+  /** Добавить выпавшую вещь в инвентарь */
+  onTakeDrop: (result: TapResult) => void;
+  /** Закрыть экран без сохранения вещи */
+  onSkipDrop: () => void;
 };
 
-export function TapPanel({ onSuccessfulTap }: Props) {
-  const { phase, result, error, reset, manualTap, session } = useTapFlow(onSuccessfulTap);
+export function TapPanel({ onTakeDrop, onSkipDrop }: Props) {
+  const { phase, result, error, reset, manualTap, session } = useTapFlow();
   const rolling = phase === 'rolling';
   const showResult = phase === 'done' && result;
   const mustResetBeforeNext = phase === 'done' && result != null;
@@ -23,6 +27,16 @@ export function TapPanel({ onSuccessfulTap }: Props) {
   const showLimitCooldown =
     session.rationed && session.blockReason === 'cooldown' && session.cooldownMsLeft > 0;
   const showLimitDaily = session.rationed && session.blockReason === 'daily_limit';
+
+  const handleTake = () => {
+    if (result) onTakeDrop(result);
+    reset();
+  };
+
+  const handleSkip = () => {
+    onSkipDrop();
+    reset();
+  };
 
   return (
     <section className="tap-panel" aria-label="Тап">
@@ -57,9 +71,17 @@ export function TapPanel({ onSuccessfulTap }: Props) {
           </div>
           <h2 className="tap-panel__label">{result.label}</h2>
           <p className="tap-panel__message">{result.message}</p>
-          <button type="button" className="tap-panel__again" onClick={reset}>
-            Дальше
-          </button>
+          <p className="tap-panel__drop">
+            Вещь: {GEAR_SLOT_LABELS[result.drop.slot]} · {result.drop.label}
+          </p>
+          <div className="tap-panel__drop-actions" role="group" aria-label="Дроп с тапа">
+            <button type="button" className="tap-panel__drop-take" onClick={handleTake}>
+              Взять
+            </button>
+            <button type="button" className="tap-panel__drop-skip" onClick={handleSkip}>
+              Пропустить
+            </button>
+          </div>
         </div>
       ) : null}
 

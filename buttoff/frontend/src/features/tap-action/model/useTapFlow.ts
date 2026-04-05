@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import type { TapResult } from '@entities/outcome';
 import { TAP_COOLDOWN_MS } from '@entities/tap-rules';
 import { useTapSession } from '@features/tap-session/model/useTapSession';
 import { useTapOutcome } from './useTapOutcome';
 
 /**
  * Ручной тап + лимит/кулдаун; при subscriptionStub — по истечении кулдауна срабатывает авто-тап (заглушка).
- * onSuccessfulTap — после ответа API (дроп в инвентарь и т.п.).
+ * Дроп в инвентарь — только после выбора «Взять» в TapPanel.
  */
-export function useTapFlow(onSuccessfulTap?: (result: TapResult) => void) {
+export function useTapFlow() {
   const session = useTapSession();
   const { phase, result, error, tap, reset } = useTapOutcome();
 
@@ -26,10 +25,9 @@ export function useTapFlow(onSuccessfulTap?: (result: TapResult) => void) {
     const out = await tap();
     if (out) {
       if (!endlessRef.current) session.recordTapCommitted();
-      onSuccessfulTap?.(out);
     }
     return !!out;
-  }, [tap, session.recordTapCommitted, onSuccessfulTap]);
+  }, [tap, session.recordTapCommitted]);
 
   const manualTap = useCallback(async () => {
     await runTap();
@@ -48,8 +46,7 @@ export function useTapFlow(onSuccessfulTap?: (result: TapResult) => void) {
         flushSync(() => reset());
       }
       void (async () => {
-        const ok = await runTap();
-        if (ok) window.setTimeout(() => reset(), 1400);
+        await runTap();
       })();
     }, ms);
 

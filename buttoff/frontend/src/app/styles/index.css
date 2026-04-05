@@ -1003,10 +1003,47 @@ body {
 }
 
 .tap-panel__drop {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.65rem;
   font-size: 0.85rem;
   line-height: 1.4;
   color: #9ec8ff;
+}
+
+.tap-panel__drop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.tap-panel__drop-take {
+  flex: 1 1 auto;
+  min-width: 6.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 255, 180, 0.4);
+  background: rgba(80, 200, 140, 0.2);
+  color: #d0ffe8;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tap-panel__drop-skip {
+  flex: 1 1 auto;
+  min-width: 6.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #a8a8bc;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.tap-panel__drop-take:active,
+.tap-panel__drop-skip:active {
+  transform: scale(0.99);
 }
 
 .tap-panel__hint {

@@ -27,6 +27,7 @@ export function useGearDressing() {
 
   const combatStats = useMemo(() => computeCombatStats(state.equipped), [state.equipped]);
 
+  /** Только по кнопке «Взять» после тапа; «Пропустить» сюда не вызывается. */
   const applyTapDrop = useCallback(
     (result: TapResult) => {
       const { drop, rarity } = result;
