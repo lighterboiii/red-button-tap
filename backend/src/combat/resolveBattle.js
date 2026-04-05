@@ -60,7 +60,7 @@ function buildPlayerHitLine(m, enemyHpAfter, spar) {
     fragments.push(
       { type: 'plain', text: 'Ты наносишь манекену ' },
       { type: 'damage', value: m.dmg },
-      { type: 'plain', text: ' урона. Манекен гасит ' },
+      { type: 'plain', text: ' урона. Манекен отбивает ' },
       { type: 'block', value: arm },
       { type: 'plain', text: '. У манекена остаётся ' },
       { type: 'hp', value: enemyHpAfter },
@@ -68,7 +68,7 @@ function buildPlayerHitLine(m, enemyHpAfter, spar) {
     );
   } else {
     fragments.push(
-      { type: 'plain', text: 'Ты наносишь по врагу ' },
+      { type: 'plain', text: 'Ты наносишь ' },
       { type: 'damage', value: m.dmg },
       { type: 'plain', text: ' урона. Вражеская броня поглощает ' },
       { type: 'block', value: arm },

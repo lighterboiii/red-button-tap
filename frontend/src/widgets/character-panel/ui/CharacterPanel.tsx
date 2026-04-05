@@ -221,7 +221,7 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
             src={avatarUrl}
             alt={displayName ? `Аватар: ${displayName}` : 'Аватар'}
             width={112}
-            height={144}
+            height={112}
             decoding="async"
             onError={() => setAvatarBroken(true)}
           />

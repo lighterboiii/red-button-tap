@@ -27,11 +27,16 @@ export function playerMaxHpFromLevel(level: number): number {
   return PLAYER_HP_BASE + (L - 1) * PLAYER_HP_PER_LEVEL;
 }
 
-/** Опыт до следующего уровня (на текущем уровне L нужно набрать xp от 0 до этого значения) */
+/**
+ * Опыт для перехода L → L+1 (полоска 0…need).
+ * Растёт с каждым уровнем: линейная часть + (L−1)² — следующий ап всегда «дороже» предыдущего.
+ */
 export function xpToNextLevel(level: number): number {
   const L = clampLevel(level);
   if (L >= MAX_LEVEL) return Infinity;
-  return 100 + (L - 1) * 50;
+  const linear = 70 + 50 * L;
+  const curve = 15 * (L - 1) * (L - 1);
+  return linear + curve;
 }
 
 export function grantXp(state: { level: number; xp: number }, amount: number): { level: number; xp: number } {

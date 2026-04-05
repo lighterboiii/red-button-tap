@@ -369,18 +369,19 @@ body {
 }
 
 .character-panel__silhouette {
-  width: 5rem;
+  width: 7rem;
   height: 7rem;
-  border-radius: 40% 40% 35% 35%;
+  border-radius: 50%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .character-panel__avatar {
-  width: 5rem;
+  width: 7rem;
   height: 7rem;
-  border-radius: 40% 40% 35% 35%;
+  border-radius: 50%;
   object-fit: cover;
+  object-position: center top;
   border: 1px solid rgba(255, 255, 255, 0.18);
   display: block;
   background: rgba(255, 255, 255, 0.06);
