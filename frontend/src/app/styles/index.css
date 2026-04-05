@@ -136,7 +136,7 @@ button,
 }
 
 .home-page--character .gear-dock__panel--character {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   width: 100%;
   min-height: 0;
   max-height: 100%;
@@ -153,6 +153,34 @@ button,
 .home-page--character .gear-dock__panel--character .character-panel {
   flex: 0 0 auto;
   width: 100%;
+  padding: 0.65rem 0.75rem 1rem;
+}
+
+/* Плотнее верх: аватар + уровень в ряд на достаточной ширине; аватар — от vmin, без «пустого неба» */
+.home-page--character .character-panel__avatar,
+.home-page--character .character-panel__silhouette {
+  width: clamp(4rem, 22vmin, 6.5rem);
+  height: clamp(4rem, 22vmin, 6.5rem);
+}
+
+@media (min-width: 360px) {
+  .home-page--character .character-panel__hero {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 0.85rem;
+    row-gap: 0.35rem;
+    width: 100%;
+  }
+
+  .home-page--character .character-panel__figure {
+    justify-self: center;
+    align-self: center;
+  }
+
+  .home-page--character .character-panel__level-block {
+    min-width: 0;
+  }
 }
 
 .home-page--character .gear-dock__tabs {
@@ -268,6 +296,7 @@ button,
 }
 
 .character-panel {
+  --character-slot-gap: 0.35rem;
   width: 100%;
   padding: 1rem 1rem 1.1rem;
   border-radius: 14px;
@@ -277,11 +306,33 @@ button,
   text-align: left;
 }
 
+.home-page--character .character-panel {
+  --character-slot-gap: clamp(0.35rem, 2.2vmin, 0.85rem);
+}
+
 .character-panel__intro {
   margin: 0 0 0.85rem;
   font-size: 0.8rem;
   line-height: 1.45;
   color: #9a9aac;
+}
+
+/** Аватар + блок уровня: на узком экране столбик, на полноэкранном персонаже — сетка в ряд */
+.character-panel__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.character-panel__hero .character-panel__figure {
+  margin-bottom: 0;
+}
+
+.character-panel__hero .character-panel__level-block {
+  width: 100%;
+  margin-bottom: 0;
 }
 
 .character-panel__figure {
@@ -444,16 +495,71 @@ button,
   margin: 0 0 0.75rem;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.35rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, auto);
+  grid-template-areas:
+    'ch-jewelry ch-head ch-shoulders'
+    '. ch-chest .'
+    'ch-sword . ch-shield';
+  gap: var(--character-slot-gap);
   width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .character-panel__slot {
+  container-type: inline-size;
+  container-name: equip-slot;
   min-width: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+}
+
+.character-panel .equip-tile {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  /* Базовый размер для em внутри — от ширины ячейки (container на li) */
+  font-size: clamp(0.48rem, 10cqw, 0.82rem);
+}
+
+.character-panel .equip-tile__atk {
+  bottom: 0.15em;
+  left: 0.22em;
+  font-size: 0.95em;
+}
+
+.character-panel .equip-tile__crit {
+  top: 0.12em;
+  right: 0.18em;
+  max-width: 45%;
+  font-size: 0.82em;
+}
+
+.character-panel .equip-tile__def {
+  bottom: 0.15em;
+  right: 0.2em;
+  font-size: 0.95em;
+}
+
+.character-panel .equip-tile__dur {
+  top: 0.1em;
+  left: 0.18em;
+  font-size: 0.78em;
+}
+
+.character-panel .equip-tile__icon {
+  font-size: 2.35em;
+}
+
+.character-panel .equip-tile__icon--muted {
+  font-size: 2.35em;
 }
 
 /** Плитка экипировки: вкладка «Кузня» и «Персонаж» */

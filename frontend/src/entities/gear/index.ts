@@ -11,3 +11,5 @@ export {
 } from './model/types';
 
 export { SLOT_TILE_GLYPH, critPctShort } from './model/slotTile';
+
+export { CHARACTER_SLOT_GRID_AREA } from './model/characterEquipGrid';

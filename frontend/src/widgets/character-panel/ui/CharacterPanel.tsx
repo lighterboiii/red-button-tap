@@ -9,7 +9,14 @@ import type {
   ItemCombatStats,
 } from '@entities/combat';
 import { RARITY_META } from '@entities/outcome';
-import { GEAR_SLOTS, GEAR_SLOT_LABELS, MAX_INVENTORY_SLOTS, type GearItem, type GearSlot } from '@entities/gear';
+import {
+  CHARACTER_SLOT_GRID_AREA,
+  GEAR_SLOTS,
+  GEAR_SLOT_LABELS,
+  MAX_INVENTORY_SLOTS,
+  type GearItem,
+  type GearSlot,
+} from '@entities/gear';
 import { EquipTile } from '@widgets/gear-equip-tile';
 
 /** Пауза перед первой строкой журнала — «заводится» бой */
@@ -233,56 +240,58 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
 
   return (
     <section className="character-panel" aria-label="Персонаж">
-      <div className="character-panel__figure">
-        {avatarUrl && !avatarBroken ? (
-          <img
-            className="character-panel__avatar"
-            src={avatarUrl}
-            alt={displayName ? `Аватар: ${displayName}` : 'Аватар'}
-            width={112}
-            height={112}
-            decoding="async"
-            onError={() => setAvatarBroken(true)}
-          />
-        ) : (
-          <div className="character-panel__silhouette" aria-hidden />
-        )}
-      </div>
-
-      <div className="character-panel__level-block" aria-label="Уровень и опыт">
-        <div className="character-panel__level-row">
-          <span className="character-panel__level-label">Уровень {level}</span>
-          <span
-            className="character-panel__level-hp-hint"
-            title="Макс. HP в бою"
-            aria-label={`Макс. HP в бою: ${playerMaxHp}`}
-          >
-            <HpHeartIcon className="character-panel__hp-heart" />
-            <span className="character-panel__hp-hint-value">{playerMaxHp}</span>
-          </span>
+      <div className="character-panel__hero">
+        <div className="character-panel__figure">
+          {avatarUrl && !avatarBroken ? (
+            <img
+              className="character-panel__avatar"
+              src={avatarUrl}
+              alt={displayName ? `Аватар: ${displayName}` : 'Аватар'}
+              width={112}
+              height={112}
+              decoding="async"
+              onError={() => setAvatarBroken(true)}
+            />
+          ) : (
+            <div className="character-panel__silhouette" aria-hidden />
+          )}
         </div>
-        {atMaxLevel ? (
-          <p className="character-panel__level-cap">Макс. уровень</p>
-        ) : (
-          <>
-            <div
-              className="character-panel__xp-bar"
-              role="progressbar"
-              aria-valuenow={xp}
-              aria-valuemin={0}
-              aria-valuemax={xpToNext}
-              aria-label={`Опыт ${xp} из ${xpToNext}`}
+
+        <div className="character-panel__level-block" aria-label="Уровень и опыт">
+          <div className="character-panel__level-row">
+            <span className="character-panel__level-label">Уровень {level}</span>
+            <span
+              className="character-panel__level-hp-hint"
+              title="Макс. HP в бою"
+              aria-label={`Макс. HP в бою: ${playerMaxHp}`}
             >
+              <HpHeartIcon className="character-panel__hp-heart" />
+              <span className="character-panel__hp-hint-value">{playerMaxHp}</span>
+            </span>
+          </div>
+          {atMaxLevel ? (
+            <p className="character-panel__level-cap">Макс. уровень</p>
+          ) : (
+            <>
               <div
-                className="character-panel__xp-bar-fill"
-                style={{ width: `${Math.round(xpProgress * 100)}%` }}
-              />
-            </div>
-            <p className="character-panel__xp-text">
-              {xp} / {xpToNext} опыта
-            </p>
-          </>
-        )}
+                className="character-panel__xp-bar"
+                role="progressbar"
+                aria-valuenow={xp}
+                aria-valuemin={0}
+                aria-valuemax={xpToNext}
+                aria-label={`Опыт ${xp} из ${xpToNext}`}
+              >
+                <div
+                  className="character-panel__xp-bar-fill"
+                  style={{ width: `${Math.round(xpProgress * 100)}%` }}
+                />
+              </div>
+              <p className="character-panel__xp-text">
+                {xp} / {xpToNext} опыта
+              </p>
+            </>
+          )}
+        </div>
       </div>
 
       <dl className="character-panel__stats" aria-label="Боевые характеристики">
@@ -305,12 +314,13 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
         </div>
       </dl>
 
-      <ul className="character-panel__slots">
+      <ul className="character-panel__slots" aria-label="Экипировка">
         {GEAR_SLOTS.map((slot) => {
           const item = equipped[slot];
           const itemStats = item ? itemStatsById[item.id] ?? null : null;
+          const area = CHARACTER_SLOT_GRID_AREA[slot];
           return (
-            <li key={slot} className="character-panel__slot">
+            <li key={slot} className="character-panel__slot" style={{ gridArea: area }}>
               <EquipTile
                 slot={slot}
                 item={item}
