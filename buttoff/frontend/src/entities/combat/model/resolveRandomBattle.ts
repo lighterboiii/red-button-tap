@@ -13,10 +13,20 @@ export type EnemyProfile = {
   defense: number;
 };
 
+/** Тренировочный противник: не игрок, фиксированные статы */
+export const SPAR_OPPONENT: EnemyProfile = {
+  name: 'Стальной манекен «Песочник»',
+  hp: 34,
+  attack: 8,
+  defense: 5,
+};
+
 export type BattleRoundLine = {
   round: number;
   text: string;
 };
+
+export type BattleKind = 'random' | 'spar';
 
 export type BattleOutcome = {
   won: boolean;
@@ -26,6 +36,7 @@ export type BattleOutcome = {
   enemyHpStart: number;
   enemyHpEnd: number;
   enemy: EnemyProfile;
+  battleKind: BattleKind;
 };
 
 function rollEnemy(): EnemyProfile {
@@ -43,14 +54,12 @@ function rngFactor(): number {
   return 0.88 + Math.random() * 0.24;
 }
 
-/**
- * Пошаговый бой: игрок и враг бьют по очереди, крит только у игрока.
- */
-export function resolveRandomBattle(
+function resolveBattleCore(
   stats: CombatStats,
   critChanceFromTaps: number,
+  enemy: EnemyProfile,
+  battleKind: BattleKind,
 ): BattleOutcome {
-  const enemy = rollEnemy();
   let playerHp = PLAYER_HP_BASE + stats.defense * PLAYER_HP_PER_DEFENSE;
   let enemyHp = enemy.hp;
   const rounds: BattleRoundLine[] = [];
@@ -59,6 +68,8 @@ export function resolveRandomBattle(
 
   const playerHpStart = playerHp;
   const enemyHpStart = enemy.hp;
+
+  const spar = battleKind === 'spar';
 
   let round = 0;
   while (round < BATTLE_MAX_ROUNDS && playerHp > 0 && enemyHp > 0) {
@@ -70,12 +81,22 @@ export function resolveRandomBattle(
     let dmg = Math.max(1, Math.floor(raw * (crit ? 2 : 1) - mitigated));
     dmg = Math.min(dmg, enemyHp);
     enemyHp -= dmg;
-    rounds.push({
-      round,
-      text: crit
-        ? `Крит! Ты бьёшь на ${dmg} (враг ${enemyHp <= 0 ? 0 : enemyHp} HP).`
-        : `Удар на ${dmg} (враг ${enemyHp <= 0 ? 0 : enemyHp} HP).`,
-    });
+
+    if (spar) {
+      rounds.push({
+        round,
+        text: crit
+          ? `Крит! По манекену ${dmg} (осталось ${enemyHp <= 0 ? 0 : enemyHp} HP).`
+          : `Удар ${dmg} (у манекена ${enemyHp <= 0 ? 0 : enemyHp} HP).`,
+      });
+    } else {
+      rounds.push({
+        round,
+        text: crit
+          ? `Крит! Ты бьёшь на ${dmg} (враг ${enemyHp <= 0 ? 0 : enemyHp} HP).`
+          : `Удар на ${dmg} (враг ${enemyHp <= 0 ? 0 : enemyHp} HP).`,
+      });
+    }
 
     if (enemyHp <= 0) {
       return {
@@ -86,6 +107,7 @@ export function resolveRandomBattle(
         enemyHpStart,
         enemyHpEnd: 0,
         enemy,
+        battleKind,
       };
     }
 
@@ -94,9 +116,12 @@ export function resolveRandomBattle(
     let dmgE = Math.max(1, Math.floor(rawE - mitE));
     dmgE = Math.min(dmgE, playerHp);
     playerHp -= dmgE;
+
     rounds.push({
       round,
-      text: `Ответ: ${dmgE} урона (у тебя ${playerHp <= 0 ? 0 : playerHp} HP).`,
+      text: spar
+        ? `Манекен отвечает: ${dmgE} (у тебя ${playerHp <= 0 ? 0 : playerHp} HP).`
+        : `Ответ: ${dmgE} урона (у тебя ${playerHp <= 0 ? 0 : playerHp} HP).`,
     });
 
     if (playerHp <= 0) {
@@ -108,15 +133,21 @@ export function resolveRandomBattle(
         enemyHpStart,
         enemyHpEnd: enemyHp,
         enemy,
+        battleKind,
       };
     }
   }
 
-  /** Ничья по лимиту раундов — по оставшемуся HP */
   const won = playerHp > enemyHp;
   rounds.push({
     round: round + 1,
-    text: won ? 'Враг отступает.' : 'Ты на пределе — отход.',
+    text: spar
+      ? won
+        ? 'Сигнал тренера — стоп, манекен «отключён».'
+        : 'Перерыв: манекен ещё стоит — можно подлечиться и зайти снова.'
+      : won
+        ? 'Враг отступает.'
+        : 'Ты на пределе — отход.',
   });
 
   return {
@@ -127,5 +158,21 @@ export function resolveRandomBattle(
     enemyHpStart,
     enemyHpEnd: Math.max(0, enemyHp),
     enemy,
+    battleKind,
   };
+}
+
+/**
+ * Пошаговый бой: игрок и враг бьют по очереди, крит только у игрока.
+ */
+export function resolveRandomBattle(stats: CombatStats, critChanceFromTaps: number): BattleOutcome {
+  const enemy = rollEnemy();
+  return resolveBattleCore(stats, critChanceFromTaps, enemy, 'random');
+}
+
+/**
+ * Тренировка против манекена: те же правила боя, без PvP.
+ */
+export function resolveSparBattle(stats: CombatStats, critChanceFromTaps: number): BattleOutcome {
+  return resolveBattleCore(stats, critChanceFromTaps, { ...SPAR_OPPONENT }, 'spar');
 }

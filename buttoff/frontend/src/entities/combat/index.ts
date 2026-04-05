@@ -13,7 +13,10 @@ export {
 } from './model/battleConstants';
 export {
   resolveRandomBattle,
+  resolveSparBattle,
+  SPAR_OPPONENT,
   type BattleOutcome,
+  type BattleKind,
   type BattleRoundLine,
   type EnemyProfile,
 } from './model/resolveRandomBattle';

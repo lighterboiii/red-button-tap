@@ -6,6 +6,7 @@ import {
   CRIT_TAP_DELTA,
   CRIT_TAP_PROC_CHANCE,
   resolveRandomBattle,
+  resolveSparBattle,
   type BattleOutcome,
 } from '@entities/combat';
 import {
@@ -90,7 +91,7 @@ export function useGearDressing() {
     });
   }, []);
 
-  const runBattle = useCallback(() => {
+  const runRandomBattle = useCallback(() => {
     setState((prev) => {
       for (const slot of GEAR_SLOTS) {
         if (!prev.equipped[slot]) return prev;
@@ -114,6 +115,20 @@ export function useGearDressing() {
     });
   }, []);
 
+  /** Манекен: без износа экипировки; достаточно надеть все слоты. */
+  const runSparBattle = useCallback(() => {
+    setState((prev) => {
+      for (const slot of GEAR_SLOTS) {
+        if (!prev.equipped[slot]) return prev;
+      }
+
+      const stats = computeCombatStats(prev.equipped);
+      const outcome = resolveSparBattle(stats, prev.critChanceFromTaps);
+      queueMicrotask(() => setLastBattle(outcome));
+      return prev;
+    });
+  }, []);
+
   const dismissLastBattle = useCallback(() => setLastBattle(null), []);
 
   const isFullyEquipped = useMemo(
@@ -126,6 +141,8 @@ export function useGearDressing() {
     return GEAR_SLOTS.every((s) => (state.equipped[s]?.durability ?? 0) >= 1);
   }, [isFullyEquipped, state.equipped]);
 
+  const canSpar = isFullyEquipped;
+
   return {
     dayKey: state.dayKey,
     inventory: state.inventory,
@@ -135,9 +152,11 @@ export function useGearDressing() {
     applyTapDrop,
     equip,
     unequip,
-    runBattle,
+    runRandomBattle,
+    runSparBattle,
     isFullyEquipped,
     canBattle,
+    canSpar,
     lastBattle,
     dismissLastBattle,
   };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   computeItemCombatStats,
   TOTAL_CRIT_CAP,
@@ -8,6 +8,11 @@ import {
 } from '@entities/combat';
 import { GEAR_SLOTS, GEAR_SLOT_LABELS, type GearItem, type GearSlot } from '@entities/gear';
 
+/** Пауза перед первой строкой журнала — «заводится» бой */
+const BATTLE_LOG_FIRST_MS = 480;
+/** Между строками хода — видно развитие схватки */
+const BATTLE_LOG_STEP_MS = 560;
+
 type Props = {
   avatarUrl?: string | null;
   displayName?: string | null;
@@ -16,8 +21,10 @@ type Props = {
     equipped: Record<GearSlot, GearItem | null>;
     equip: (id: string) => void;
     unequip: (slot: GearSlot) => void;
-    runBattle: () => void;
+    runRandomBattle: () => void;
+    runSparBattle: () => void;
     canBattle: boolean;
+    canSpar: boolean;
     combatStats: CombatStats;
     critChanceFromTaps: number;
     lastBattle: BattleOutcome | null;
@@ -39,13 +46,18 @@ function ItemCombatLine({ stats }: { stats: ItemCombatStats }) {
 
 export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
   const [avatarBroken, setAvatarBroken] = useState(false);
+  /** Сколько строк журнала боя уже показано (пошагово). */
+  const [battleLogRevealed, setBattleLogRevealed] = useState(0);
+  const replaySkipRef = useRef(false);
   const {
     inventory,
     equipped,
     equip,
     unequip,
-    runBattle,
+    runRandomBattle,
+    runSparBattle,
     canBattle,
+    canSpar,
     combatStats,
     critChanceFromTaps,
     lastBattle,
@@ -53,6 +65,41 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
   } = gear;
 
   const totalCrit = Math.min(TOTAL_CRIT_CAP, combatStats.critFromGear + critChanceFromTaps);
+
+  useEffect(() => {
+    replaySkipRef.current = false;
+    if (!lastBattle) {
+      setBattleLogRevealed(0);
+      return;
+    }
+    const n = lastBattle.rounds.length;
+    if (n === 0) {
+      setBattleLogRevealed(0);
+      return;
+    }
+    setBattleLogRevealed(0);
+    let cancelled = false;
+    let count = 0;
+    let tid: ReturnType<typeof setTimeout>;
+
+    const step = () => {
+      if (cancelled || replaySkipRef.current) return;
+      count += 1;
+      setBattleLogRevealed(count);
+      if (count < n) {
+        tid = setTimeout(step, BATTLE_LOG_STEP_MS);
+      }
+    };
+
+    tid = setTimeout(step, BATTLE_LOG_FIRST_MS);
+    return () => {
+      cancelled = true;
+      clearTimeout(tid);
+    };
+  }, [lastBattle]);
+
+  const battleLogComplete =
+    lastBattle != null && battleLogRevealed >= lastBattle.rounds.length;
 
   return (
     <section className="character-panel" aria-label="Персонаж">
@@ -127,38 +174,127 @@ export function CharacterPanel({ gear, avatarUrl, displayName }: Props) {
       </ul>
 
       <div className="character-panel__battle">
-        <button
-          type="button"
-          className="character-panel__battle-btn"
-          disabled={!canBattle}
-          onClick={() => runBattle()}
-        >
-          Случайный бой
-        </button>
+        <div className="character-panel__battle-actions">
+          <button
+            type="button"
+            className="character-panel__battle-btn"
+            disabled={!canBattle}
+            onClick={() => runRandomBattle()}
+          >
+            Случайный бой
+          </button>
+          <button
+            type="button"
+            className="character-panel__battle-btn character-panel__battle-btn--spar"
+            disabled={!canSpar}
+            onClick={() => runSparBattle()}
+          >
+            Тренировка
+          </button>
+        </div>
+        <p className="character-panel__battle-hint">
+          Тренировка — бой с манекеном, экипировка не трескается. Случайный бой — настоящий враг и износ вещей.
+        </p>
       </div>
 
       {lastBattle ? (
         <div
-          className="character-panel__battle-overlay"
+          className={`character-panel__battle-overlay ${
+            lastBattle.battleKind === 'spar' ? 'character-panel__battle-overlay--spar' : ''
+          }`}
           role="dialog"
           aria-modal="true"
-          aria-labelledby="character-panel-battle-title"
+          aria-labelledby={
+            battleLogComplete ? 'character-panel-battle-title' : 'character-panel-battle-live'
+          }
         >
-          <div className="character-panel__battle-sheet">
-            <h3 id="character-panel-battle-title" className="character-panel__battle-title">
-              {lastBattle.won ? 'Победа' : 'Поражение'}
-            </h3>
-            <p className="character-panel__battle-enemy">{lastBattle.enemy.name}</p>
-            <p className="character-panel__battle-summary">
-              Твой HP: {lastBattle.playerHpStart} → {lastBattle.playerHpEnd} · Враг:{' '}
-              {lastBattle.enemyHpStart} → {lastBattle.enemyHpEnd}
-            </p>
-            <ul className="character-panel__battle-log">
-              {lastBattle.rounds.map((r) => (
-                <li key={r.round}>{r.text}</li>
+          <div
+            className={[
+              'character-panel__battle-sheet',
+              lastBattle.battleKind === 'spar' ? 'character-panel__battle-sheet--spar' : '',
+              battleLogComplete ? '' : 'character-panel__battle-sheet--playing',
+              battleLogComplete
+                ? lastBattle.won
+                  ? 'character-panel__battle-sheet--outcome-win'
+                  : 'character-panel__battle-sheet--outcome-loss'
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {lastBattle.battleKind === 'spar' ? (
+              <p className="character-panel__battle-ribbon" role="presentation">
+                Тренировочный полигон
+              </p>
+            ) : null}
+            {!battleLogComplete ? (
+              <h3 id="character-panel-battle-live" className="character-panel__battle-live-title">
+                Журнал боя
+              </h3>
+            ) : null}
+            <ul className="character-panel__battle-log" aria-live="polite" aria-relevant="additions">
+              {lastBattle.rounds.slice(0, battleLogRevealed).map((r) => (
+                <li key={r.round} className="character-panel__battle-log-line">
+                  {r.text}
+                </li>
               ))}
             </ul>
-            <button type="button" className="character-panel__battle-ok" onClick={() => dismissLastBattle()}>
+            {!battleLogComplete ? (
+              <p className="character-panel__battle-pulse" aria-hidden>
+                <span className="character-panel__battle-pulse-dot" />
+                Бой идёт
+              </p>
+            ) : null}
+            {!battleLogComplete ? (
+              <button
+                type="button"
+                className="character-panel__battle-skip-log"
+                onClick={() => {
+                  replaySkipRef.current = true;
+                  setBattleLogRevealed(lastBattle.rounds.length);
+                }}
+              >
+                Показать всё
+              </button>
+            ) : null}
+            {battleLogComplete ? (
+              <div
+                className={`character-panel__battle-result character-panel__battle-result--${
+                  lastBattle.won ? 'win' : 'loss'
+                }`}
+              >
+                <h3
+                  id="character-panel-battle-title"
+                  className={`character-panel__battle-title character-panel__battle-title--${
+                    lastBattle.won ? 'win' : 'loss'
+                  }`}
+                >
+                  {lastBattle.won ? 'Победа' : 'Поражение'}
+                </h3>
+                <p
+                  className={`character-panel__battle-enemy character-panel__battle-enemy--${
+                    lastBattle.won ? 'win' : 'loss'
+                  }`}
+                >
+                  {lastBattle.enemy.name}
+                </p>
+                <p
+                  className={`character-panel__battle-summary character-panel__battle-summary--${
+                    lastBattle.won ? 'win' : 'loss'
+                  }`}
+                >
+                  Твой HP: {lastBattle.playerHpStart} → {lastBattle.playerHpEnd} ·{' '}
+                  {lastBattle.battleKind === 'spar' ? 'Манекен' : 'Враг'}: {lastBattle.enemyHpStart} →{' '}
+                  {lastBattle.enemyHpEnd}
+                </p>
+              </div>
+            ) : null}
+            <button
+              type="button"
+              className="character-panel__battle-ok"
+              disabled={!battleLogComplete}
+              onClick={() => dismissLastBattle()}
+            >
               Ок
             </button>
           </div>
