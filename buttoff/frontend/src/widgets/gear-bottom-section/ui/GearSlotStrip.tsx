@@ -1,3 +1,4 @@
+import { computeItemCombatStats } from '@entities/combat';
 import { GEAR_SLOTS, GEAR_SLOT_LABELS, type GearItem, type GearSlot } from '@entities/gear';
 
 type Props = {
@@ -19,6 +20,11 @@ export function GearSlotStrip({ equipped }: Props) {
         {GEAR_SLOTS.map((slot) => {
           const item = equipped[slot];
           const filled = item != null;
+          const stats = item ? computeItemCombatStats(item) : null;
+          const tip =
+            item && stats
+              ? `${GEAR_SLOT_LABELS[slot]}: ${item.label} · Атк ${stats.attack} Защ ${stats.defense} Крит ${(stats.critChance * 100).toFixed(0)}%`
+              : GEAR_SLOT_LABELS[slot];
           return (
             <li key={slot} className="gear-slot-strip__cell-wrap">
               <div
@@ -26,7 +32,7 @@ export function GearSlotStrip({ equipped }: Props) {
                   'gear-slot-strip__square',
                   filled ? `gear-slot-strip__square--${item.rarity}` : 'gear-slot-strip__square--empty',
                 ].join(' ')}
-                title={GEAR_SLOT_LABELS[slot]}
+                title={tip}
               >
                 <span className="gear-slot-strip__abbr">{SLOT_SHORT[slot]}</span>
                 {filled ? (

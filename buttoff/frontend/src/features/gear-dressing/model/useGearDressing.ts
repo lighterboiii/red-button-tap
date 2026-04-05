@@ -1,6 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { TapResult } from '@entities/outcome';
 import {
+  computeCombatStats,
+  CRIT_FROM_TAPS_CAP,
+  CRIT_TAP_DELTA,
+  CRIT_TAP_PROC_CHANCE,
+  resolveRandomBattle,
+  type BattleOutcome,
+} from '@entities/combat';
+import {
   GEAR_SLOTS,
   MAX_GEAR_DURABILITY,
   type GearItem,
@@ -15,6 +23,9 @@ function newId(): string {
 
 export function useGearDressing() {
   const [state, setState] = useState<GearDressingStored>(() => loadGearDressing());
+  const [lastBattle, setLastBattle] = useState<BattleOutcome | null>(null);
+
+  const combatStats = useMemo(() => computeCombatStats(state.equipped), [state.equipped]);
 
   const applyTapDrop = useCallback(
     (result: TapResult) => {
@@ -28,9 +39,14 @@ export function useGearDressing() {
         maxDurability: MAX_GEAR_DURABILITY,
       };
       setState((prev) => {
+        let crit = prev.critChanceFromTaps;
+        if (Math.random() < CRIT_TAP_PROC_CHANCE) {
+          crit = Math.min(CRIT_FROM_TAPS_CAP, crit + CRIT_TAP_DELTA);
+        }
         const next: GearDressingStored = {
           ...prev,
           inventory: [...prev.inventory, item],
+          critChanceFromTaps: crit,
         };
         saveGearDressing(next);
         return next;
@@ -78,6 +94,12 @@ export function useGearDressing() {
       for (const slot of GEAR_SLOTS) {
         if (!prev.equipped[slot]) return prev;
       }
+      if (!GEAR_SLOTS.every((s) => (prev.equipped[s]?.durability ?? 0) >= 1)) return prev;
+
+      const stats = computeCombatStats(prev.equipped);
+      const outcome = resolveRandomBattle(stats, prev.critChanceFromTaps);
+      queueMicrotask(() => setLastBattle(outcome));
+
       const equipped = { ...prev.equipped };
       for (const slot of GEAR_SLOTS) {
         const item = equipped[slot]!;
@@ -90,6 +112,8 @@ export function useGearDressing() {
       return next;
     });
   }, []);
+
+  const dismissLastBattle = useCallback(() => setLastBattle(null), []);
 
   const isFullyEquipped = useMemo(
     () => GEAR_SLOTS.every((s) => state.equipped[s] != null),
@@ -105,11 +129,15 @@ export function useGearDressing() {
     dayKey: state.dayKey,
     inventory: state.inventory,
     equipped: state.equipped,
+    critChanceFromTaps: state.critChanceFromTaps,
+    combatStats,
     applyTapDrop,
     equip,
     unequip,
     runBattle,
     isFullyEquipped,
     canBattle,
+    lastBattle,
+    dismissLastBattle,
   };
 }

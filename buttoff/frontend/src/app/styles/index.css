@@ -333,6 +333,73 @@ body {
   margin-bottom: 0.75rem;
 }
 
+.character-panel__stats-legend {
+  margin: 0 0 0.55rem;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #8a8a9c;
+}
+
+.character-panel__stats-legend strong {
+  color: #b8b8cc;
+  font-weight: 600;
+}
+
+.character-panel__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0 0 0.85rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.character-panel__stat {
+  text-align: center;
+}
+
+.character-panel__stat dt {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a8a9c;
+}
+
+.character-panel__stat dd {
+  margin: 0.2rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #ececf1;
+}
+
+.character-panel__stat--crit dd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.character-panel__stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #ececf1;
+}
+
+.character-panel__stat-split {
+  display: block;
+  max-width: 100%;
+  font-size: 0.58rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #8a8a9c;
+}
+
 .character-panel__silhouette {
   width: 5rem;
   height: 7rem;
@@ -382,10 +449,9 @@ body {
 
 .character-panel__item {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.35rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.28rem;
   width: 100%;
   padding: 0.45rem 0.55rem;
   border-radius: 8px;
@@ -395,6 +461,23 @@ body {
   font-size: 0.82rem;
   cursor: pointer;
   text-align: left;
+}
+
+.character-panel__item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.character-panel__item-combat {
+  display: block;
+  width: 100%;
+  font-size: 0.65rem;
+  line-height: 1.3;
+  color: #a4a4b8;
+  font-variant-numeric: tabular-nums;
 }
 
 .character-panel__item--common {
@@ -452,6 +535,73 @@ body {
 .character-panel__battle-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.character-panel__battle-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.character-panel__battle-sheet {
+  width: min(100%, 22rem);
+  max-height: min(80vh, 28rem);
+  overflow: auto;
+  padding: 1rem 1.05rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 200, 120, 0.35);
+  background: linear-gradient(180deg, #1e1e28 0%, #16161c 100%);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.character-panel__battle-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffd8c8;
+}
+
+.character-panel__battle-enemy {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: #c8c8dc;
+}
+
+.character-panel__battle-summary {
+  margin: 0 0 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: #9a9aac;
+}
+
+.character-panel__battle-log {
+  margin: 0 0 0.85rem;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #d8d8e8;
+}
+
+.character-panel__battle-log li {
+  margin-bottom: 0.35rem;
+}
+
+.character-panel__battle-ok {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ececf1;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .character-panel__battle-note {
@@ -513,7 +663,8 @@ body {
   width: 100%;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 0.35rem 0.5rem;
+  grid-template-rows: auto auto;
+  gap: 0.25rem 0.5rem;
   align-items: baseline;
   padding: 0.5rem 0.55rem;
   border-radius: 8px;
@@ -523,6 +674,10 @@ body {
   font-size: 0.8rem;
   cursor: pointer;
   text-align: left;
+}
+
+.character-panel__stash-chip .character-panel__item-combat {
+  grid-column: 1 / -1;
 }
 
 .character-panel__stash-chip--common {
