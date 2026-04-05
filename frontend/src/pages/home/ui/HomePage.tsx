@@ -19,9 +19,11 @@ export function HomePage() {
         <div className="home-page__scroll">
           <div className="home-page__tap">
             <TapPanel
-              onTakeDrop={gear.applyTapDrop}
-              onSkipDrop={() => undefined}
+              onTakeToInventory={gear.applyTapDropToInventory}
+              onEquip={gear.applyTapDropAndEquip}
+              onDiscard={() => undefined}
               inventoryFull={gear.inventoryFull}
+              canEquipTapDrop={gear.canEquipTapDrop}
             />
           </div>
         </div>

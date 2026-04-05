@@ -125,7 +125,8 @@ export function useGearDressing() {
   const totalCritChance = preview?.totalCritChance ?? 0;
   const itemStatsById: Record<string, ItemCombatStats> = preview?.itemStatsById ?? {};
 
-  const applyTapDrop = useCallback(async (result: TapResult) => {
+  /** В рюкзак (нужна свободная ячейка) */
+  const applyTapDropToInventory = useCallback(async (result: TapResult) => {
     const snap = gearRef.current;
     if (snap.inventory.length >= MAX_INVENTORY_SLOTS) return;
 
@@ -152,7 +153,7 @@ export function useGearDressing() {
       if (Math.random() < CRIT_TAP_PROC_CHANCE) {
         crit = Math.min(CRIT_FROM_TAPS_CAP, crit + CRIT_TAP_DELTA);
       }
-      let next: GearDressingStored = {
+      const next: GearDressingStored = {
         ...applySnapshot(prev, snapProg),
         inventory: [...prev.inventory, item],
         critChanceFromTaps: crit,
@@ -160,6 +161,59 @@ export function useGearDressing() {
       saveGearDressing(next);
       return next;
     });
+  }, []);
+
+  /** Сразу в слот: если в слоте была вещь — в рюкзаке нужна ячейка под снятое */
+  const applyTapDropAndEquip = useCallback(async (result: TapResult) => {
+    const snap = gearRef.current;
+    const slot = result.drop.slot;
+    if (snap.equipped[slot] && snap.inventory.length >= MAX_INVENTORY_SLOTS) return;
+
+    let snapProg: ProgressionSnapshot;
+    try {
+      snapProg = await postProgressionTapTake({ progression: progressionPayload(snap) });
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+
+    setState((prev) => {
+      const { drop, rarity } = result;
+      const item: GearItem = {
+        id: newId(),
+        slot: drop.slot,
+        label: drop.label,
+        rarity,
+        durability: MAX_GEAR_DURABILITY,
+        maxDurability: MAX_GEAR_DURABILITY,
+      };
+      let crit = prev.critChanceFromTaps;
+      if (Math.random() < CRIT_TAP_PROC_CHANCE) {
+        crit = Math.min(CRIT_FROM_TAPS_CAP, crit + CRIT_TAP_DELTA);
+      }
+      const base = applySnapshot(prev, snapProg);
+      const prevEq = base.equipped[slot];
+      const inv = [...base.inventory];
+      if (prevEq) inv.push(prevEq);
+      if (inv.length > MAX_INVENTORY_SLOTS) return prev;
+      const next: GearDressingStored = {
+        ...base,
+        inventory: inv,
+        equipped: { ...base.equipped, [slot]: item },
+        critChanceFromTaps: crit,
+      };
+      saveGearDressing(next);
+      return next;
+    });
+  }, []);
+
+  const canEquipTapDrop = useCallback((result: TapResult) => {
+    const snap = gearRef.current;
+    const slot = result.drop.slot;
+    if (snap.equipped[slot]) {
+      return snap.inventory.length < MAX_INVENTORY_SLOTS;
+    }
+    return true;
   }, []);
 
   const equip = useCallback((itemId: string) => {
@@ -352,7 +406,9 @@ export function useGearDressing() {
     combatStats,
     totalCritChance,
     itemStatsById,
-    applyTapDrop,
+    applyTapDropToInventory,
+    applyTapDropAndEquip,
+    canEquipTapDrop,
     equip,
     unequip,
     prepareRandomBattle,

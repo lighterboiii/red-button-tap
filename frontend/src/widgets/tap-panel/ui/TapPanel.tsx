@@ -1,27 +1,65 @@
+import { useEffect, useState } from 'react';
 import { RARITY_META } from '@entities/outcome';
 import type { TapResult } from '@entities/outcome';
-import { GEAR_SLOT_LABELS } from '@entities/gear';
+import type { ItemCombatStats } from '@entities/combat';
+import { GEAR_SLOT_LABELS, SLOT_TILE_GLYPH } from '@entities/gear';
 import { TapButton, useTapFlow } from '@features/tap-action';
+import { postCombatItemStats } from '@shared/api/client';
 import { formatCooldownMs } from '@shared/lib/formatCooldown';
 
 function outcomeClass(rarity: TapResult['rarity']) {
   return `tap-panel__outcome tap-panel__outcome--${rarity}`;
 }
 
+function formatCritPct(crit: number): string {
+  return `${(crit * 100).toFixed(1)}%`;
+}
+
 type Props = {
-  /** Добавить выпавшую вещь в инвентарь (может быть async — опыт с сервера) */
-  onTakeDrop: (result: TapResult) => void | Promise<void>;
-  /** Закрыть экран без сохранения вещи */
-  onSkipDrop: () => void;
-  /** Рюкзак заполнен — «Взять» недоступно */
-  inventoryFull?: boolean;
+  /** Положить в рюкзак (опыт с сервера) */
+  onTakeToInventory: (result: TapResult) => void | Promise<void>;
+  /** Сразу надень в слот (опыт с сервера) */
+  onEquip: (result: TapResult) => void | Promise<void>;
+  /** Выбросить дроп без награды */
+  onDiscard: () => void;
+  inventoryFull: boolean;
+  /** Можно ли снять текущую вещь в рюкзак при «Надеть» */
+  canEquipTapDrop: (result: TapResult) => boolean;
 };
 
-export function TapPanel({ onTakeDrop, onSkipDrop, inventoryFull }: Props) {
+export function TapPanel({
+  onTakeToInventory,
+  onEquip,
+  onDiscard,
+  inventoryFull,
+  canEquipTapDrop,
+}: Props) {
   const { phase, result, error, reset, manualTap, session } = useTapFlow();
   const rolling = phase === 'rolling';
   const showResult = phase === 'done' && result;
   const mustResetBeforeNext = phase === 'done' && result != null;
+
+  const [dropStats, setDropStats] = useState<ItemCombatStats | null>(null);
+
+  useEffect(() => {
+    if (!result) {
+      setDropStats(null);
+      return;
+    }
+    let cancelled = false;
+    setDropStats(null);
+    void (async () => {
+      try {
+        const s = await postCombatItemStats({ slot: result.drop.slot, rarity: result.rarity });
+        if (!cancelled) setDropStats(s);
+      } catch {
+        if (!cancelled) setDropStats(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [result?.id, result?.drop.slot, result?.rarity]);
 
   const buttonDisabled =
     rolling || mustResetBeforeNext || (!session.endless && !session.canTap);
@@ -30,18 +68,30 @@ export function TapPanel({ onTakeDrop, onSkipDrop, inventoryFull }: Props) {
     session.rationed && session.blockReason === 'cooldown' && session.cooldownMsLeft > 0;
   const showLimitDaily = session.rationed && session.blockReason === 'daily_limit';
 
+  const equipAllowed = Boolean(result && canEquipTapDrop(result));
+
   const handleTake = async () => {
     if (inventoryFull || !result) return;
     try {
-      await onTakeDrop(result);
+      await onTakeToInventory(result);
       reset();
     } catch {
-      /* прогрессия не применилась — экран дропа остаётся */
+      /* прогрессия не применилась */
     }
   };
 
-  const handleSkip = () => {
-    onSkipDrop();
+  const handleEquip = async () => {
+    if (!result || !equipAllowed) return;
+    try {
+      await onEquip(result);
+      reset();
+    } catch {
+      /* прогрессия не применилась */
+    }
+  };
+
+  const handleDiscard = () => {
+    onDiscard();
     reset();
   };
 
@@ -73,31 +123,65 @@ export function TapPanel({ onTakeDrop, onSkipDrop, inventoryFull }: Props) {
 
       {showResult && result ? (
         <div className={outcomeClass(result.rarity)}>
-          <div className="tap-panel__rarity-row">
-            <span className="tap-panel__rarity">{RARITY_META[result.rarity].title}</span>
+          <div className="tap-panel__drop-card">
+            <div className="tap-panel__drop-icon-wrap" aria-hidden>
+              <span className="tap-panel__drop-icon">{SLOT_TILE_GLYPH[result.drop.slot]}</span>
+            </div>
+            <div className="tap-panel__drop-main">
+              <div className="tap-panel__rarity-row">
+                <span className="tap-panel__rarity">{RARITY_META[result.rarity].title}</span>
+              </div>
+              <p className="tap-panel__slot-type">{GEAR_SLOT_LABELS[result.drop.slot]}</p>
+              <h2 className="tap-panel__label">{result.drop.label}</h2>
+            </div>
           </div>
-          <h2 className="tap-panel__label">{result.label}</h2>
-          <p className="tap-panel__message">{result.message}</p>
-          <p className="tap-panel__drop">
-            Вещь: {GEAR_SLOT_LABELS[result.drop.slot]} · {result.drop.label}
-          </p>
-          <div className="tap-panel__drop-actions" role="group" aria-label="Дроп с тапа">
+
+          <dl className="tap-panel__drop-stats" aria-label="Характеристики предмета">
+            <div className="tap-panel__drop-stat">
+              <dt>Атака</dt>
+              <dd>{dropStats ? dropStats.attack : '…'}</dd>
+            </div>
+            <div className="tap-panel__drop-stat">
+              <dt>Защита</dt>
+              <dd>{dropStats ? dropStats.defense : '…'}</dd>
+            </div>
+            <div className="tap-panel__drop-stat">
+              <dt>Крит</dt>
+              <dd>{dropStats ? formatCritPct(dropStats.critChance) : '…'}</dd>
+            </div>
+          </dl>
+
+          <div className="tap-panel__drop-actions" role="group" aria-label="Действия с дропом">
             {inventoryFull ? (
               <p className="tap-panel__inv-full" role="status">
-                Инвентарь полон — надень или убери вещи на вкладке «Персонаж».
+                Рюкзак полон — «Взять» недоступно.
+              </p>
+            ) : null}
+            {!equipAllowed ? (
+              <p className="tap-panel__inv-full tap-panel__inv-full--equip" role="status">
+                Нет места в рюкзаке под снятую вещь — освободи ячейку, чтобы надеть сразу.
               </p>
             ) : null}
             <button
               type="button"
               className="tap-panel__drop-take"
-              disabled={Boolean(inventoryFull)}
+              disabled={inventoryFull}
               title={inventoryFull ? 'Рюкзак заполнен' : undefined}
               onClick={handleTake}
             >
               Взять
             </button>
-            <button type="button" className="tap-panel__drop-skip" onClick={handleSkip}>
-              Пропустить
+            <button
+              type="button"
+              className="tap-panel__drop-equip"
+              disabled={!equipAllowed}
+              title={!equipAllowed ? 'Нет места в рюкзаке под снятую вещь' : 'Надеть сразу'}
+              onClick={handleEquip}
+            >
+              Надеть
+            </button>
+            <button type="button" className="tap-panel__drop-skip" onClick={handleDiscard}>
+              Выбросить
             </button>
           </div>
         </div>

@@ -4,7 +4,7 @@ import cors from 'cors';
 import { rollTap } from './rng.js';
 import { rollDrop, SLOT_LABEL_RU } from './drops.js';
 import { telegramAuthMiddleware } from './telegramMiddleware.js';
-import { computeCombatStats, computeItemStatsMap } from './combat/computeStats.js';
+import { computeCombatStats, computeItemCombatStats, computeItemStatsMap } from './combat/computeStats.js';
 import { TOTAL_CRIT_CAP } from './combat/constants.js';
 import {
   applyBattleXp,
@@ -26,6 +26,7 @@ const app = express();
 const PORT = process.env.PORT ?? 3001;
 
 const GEAR_SLOTS = ['head', 'sword', 'shield', 'shoulders', 'chest'];
+const RARITIES = ['common', 'uncommon', 'rare', 'legendary'];
 
 function sanitizeEquipped(raw) {
   const o = {};
@@ -131,6 +132,29 @@ app.post('/api/combat/preview', telegramAuthMiddleware, (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'preview_failed' });
+  }
+});
+
+/** Статы одной вещи по слоту и редкости (карточка дропа с тапа) */
+app.post('/api/combat/item-stats', telegramAuthMiddleware, (req, res) => {
+  try {
+    const slot = req.body?.slot;
+    const rarity = req.body?.rarity;
+    if (!GEAR_SLOTS.includes(slot) || !RARITIES.includes(rarity)) {
+      return res.status(400).json({ error: 'invalid_slot_or_rarity' });
+    }
+    const stats = computeItemCombatStats({
+      id: '_',
+      slot,
+      rarity,
+      label: '',
+      durability: 1,
+      maxDurability: 1,
+    });
+    res.json(stats);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'item_stats_failed' });
   }
 });
 

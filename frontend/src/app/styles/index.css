@@ -1619,29 +1619,88 @@ button.equip-tile {
   color: #b8b8c8;
 }
 
+.tap-panel__drop-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.tap-panel__drop-icon-wrap {
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.tap-panel__drop-icon {
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.tap-panel__drop-main {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.tap-panel__slot-type {
+  margin: 0 0 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9a9aac;
+}
+
 .tap-panel__label {
-  margin: 0 0 0.35rem;
-  font-size: 1.15rem;
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #ececf1;
 }
 
-.tap-panel__message {
-  margin: 0 0 0.5rem;
+.tap-panel__drop-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.tap-panel__drop-stat {
+  text-align: center;
+}
+
+.tap-panel__drop-stat dt {
+  margin: 0;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a8a9c;
+}
+
+.tap-panel__drop-stat dd {
+  margin: 0.15rem 0 0;
   font-size: 0.95rem;
-  line-height: 1.45;
-  color: #d8d8e4;
-}
-
-.tap-panel__drop {
-  margin: 0 0 0.65rem;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: #9ec8ff;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #ececf1;
 }
 
 .tap-panel__drop-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.35rem;
   margin-top: 0.25rem;
   align-items: center;
 }
@@ -1655,37 +1714,57 @@ button.equip-tile {
   text-align: center;
 }
 
+.tap-panel__inv-full--equip {
+  color: #c8b8ff;
+}
+
 .tap-panel__drop-take {
   flex: 1 1 auto;
-  min-width: 6.5rem;
-  padding: 0.65rem 1rem;
-  border-radius: 10px;
+  min-width: 4.25rem;
+  padding: 0.38rem 0.55rem;
+  border-radius: 8px;
   border: 1px solid rgba(120, 255, 180, 0.4);
   background: rgba(80, 200, 140, 0.2);
   color: #d0ffe8;
-  font-size: 0.95rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
 }
 
 .tap-panel__drop-skip {
   flex: 1 1 auto;
-  min-width: 6.5rem;
-  padding: 0.65rem 1rem;
-  border-radius: 10px;
+  min-width: 4.25rem;
+  padding: 0.38rem 0.55rem;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.05);
   color: #a8a8bc;
-  font-size: 0.95rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tap-panel__drop-equip {
+  flex: 1 1 auto;
+  min-width: 4.25rem;
+  padding: 0.38rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid rgba(200, 160, 255, 0.45);
+  background: rgba(120, 80, 180, 0.22);
+  color: #e8dcff;
+  font-size: 0.78rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .tap-panel__drop-take:active:not(:disabled),
+.tap-panel__drop-equip:active:not(:disabled),
 .tap-panel__drop-skip:active {
   transform: scale(0.99);
 }
 
-.tap-panel__drop-take:disabled {
+.tap-panel__drop-take:disabled,
+.tap-panel__drop-equip:disabled {
   opacity: 0.48;
   cursor: not-allowed;
   border-color: rgba(100, 100, 110, 0.45);

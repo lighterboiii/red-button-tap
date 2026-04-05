@@ -4,10 +4,12 @@ import type {
   BattleOpponentResponse,
   CombatPreviewResponse,
   EnemyProfile,
+  ItemCombatStats,
 } from '@entities/combat';
 import type { ProgressionSnapshot, PlayerProgressionPayload } from '@entities/progression';
 import type { TapResult } from '@entities/outcome';
 import type { GearItem, GearSlot } from '@entities/gear';
+import type { Rarity } from '@entities/outcome';
 import { getTelegramInitData } from '@shared/lib/telegramInitData';
 
 function url(path: string) {
@@ -65,6 +67,22 @@ export async function postCombatPreview(
     throw new Error(`Ошибка API ${res.status}${detail}`);
   }
   return JSON.parse(text) as CombatPreviewResponse;
+}
+
+export async function postCombatItemStats(body: {
+  slot: GearSlot;
+  rarity: Rarity;
+}): Promise<ItemCombatStats> {
+  const res = await fetch(url('/api/combat/item-stats'), {
+    method: 'POST',
+    headers: telegramHeaders(),
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`Ошибка API ${res.status}`);
+  }
+  return JSON.parse(text) as ItemCombatStats;
 }
 
 export async function postProgressionSync(body: {
