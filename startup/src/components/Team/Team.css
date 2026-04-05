@@ -1,6 +1,6 @@
 /* Team — команда, два человека, фото + имя + регалии + описание */
 .team {
-  padding: 56px 20px 64px;
+  padding: 56px var(--gutter, 20px) 64px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
@@ -8,7 +8,12 @@
 
 .team__inner {
   width: 100%;
+  max-width: var(--content-max, 1360px);
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .team__title {
@@ -52,10 +57,28 @@
   max-width: 280px;
   background: var(--bg-muted);
   border: 1px solid var(--border-subtle);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.team__photo-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.team__photo-img--small {
+  transform: scale(0.8);
+  transform-origin: center;
 }
 
 .team__photo-placeholder {
@@ -92,6 +115,20 @@
 
   .team__photo {
     max-width: 240px;
+  }
+}
+
+/* Мобила: фото по центру на всю ширину квадрат; имя и регалии — по левому краю */
+@media (max-width: 733px) {
+  .team__card {
+    align-items: flex-start;
+  }
+
+  .team__photo {
+    max-width: 100%;
+    width: 100%;
+    aspect-ratio: 1;
+    align-self: center;
   }
 }
 

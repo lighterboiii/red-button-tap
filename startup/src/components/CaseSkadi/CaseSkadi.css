@@ -1,23 +1,14 @@
-/* CaseSkadi — история успеха / кейс, блок доверия */
 .case-skadi {
-  padding: 64px 20px 72px;
+  padding: 64px var(--gutter, 20px) 64px;
   background: linear-gradient(180deg, var(--bg-muted) 0%, var(--bg-card) 100%);
   border: 1px solid var(--border-subtle);
   position: relative;
   overflow: hidden;
 }
 
-.case-skadi::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-hover) 100%);
-}
-
 .case-skadi__wrap {
+  max-width: var(--content-max, 1360px);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -32,12 +23,73 @@
 
 .case-skadi__media {
   flex-shrink: 0;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1;
   background: var(--bg-muted);
   border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.case-skadi__slider-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  transition: transform 0.35s ease;
+}
+
+.case-skadi__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.case-skadi__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.case-skadi__slider-footer {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
+}
+
+.case-skadi__dots {
+  display: flex;
+  gap: 8px;
+}
+
+.case-skadi__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.case-skadi__dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.case-skadi__dot--active {
+  background: #fff;
+  transform: scale(1.2);
 }
 
 .case-skadi__placeholder {
@@ -103,12 +155,16 @@
   margin-bottom: 0;
 }
 
+.case-skadi__body {
+  margin: 0 0 20px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
 .case-skadi__thesis {
   margin: 0;
-  padding: 24px 28px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--accent);
+  padding: 0;
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.5;
@@ -134,7 +190,6 @@
   }
 
   .case-skadi__thesis {
-    padding: 28px 32px;
     font-size: 1.1rem;
   }
 }
@@ -159,7 +214,7 @@
   .case-skadi__media {
     flex: 1;
     min-width: 0;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1;
   }
 
   .case-skadi__eyebrow {

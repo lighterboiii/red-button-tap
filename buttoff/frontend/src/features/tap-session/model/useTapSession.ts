@@ -48,10 +48,12 @@ export function useTapSession() {
 
   const recordTapCommitted = useCallback(() => {
     setSession((prev) => {
+      const tapsToday = prev.tapsToday + 1;
       const next: TapSessionStored = {
         ...prev,
-        tapsToday: prev.tapsToday + 1,
+        tapsToday,
         lastTapAt: Date.now(),
+        subOfferAfterLimitTap: tapsToday >= MAX_TAPS_PER_DAY,
       };
       saveTapSession(next);
       return next;
@@ -60,7 +62,15 @@ export function useTapSession() {
 
   const setSubscriptionStub = useCallback((on: boolean) => {
     setSession((prev) => {
-      const next = { ...prev, subscriptionStub: on };
+      const next = { ...prev, subscriptionStub: on, ...(on ? { subOfferAfterLimitTap: false } : {}) };
+      saveTapSession(next);
+      return next;
+    });
+  }, []);
+
+  const dismissSubOfferAfterLimit = useCallback(() => {
+    setSession((prev) => {
+      const next = { ...prev, subOfferAfterLimitTap: false };
       saveTapSession(next);
       return next;
     });
@@ -97,12 +107,15 @@ export function useTapSession() {
       blockReason,
       recordTapCommitted,
       setSubscriptionStub,
+      subOfferAfterLimitTap: session.subOfferAfterLimitTap,
+      dismissSubOfferAfterLimit,
       showDailyBonusBanner,
       dismissDailyBonus,
     };
   }, [
     session.modeForDay,
     session.subscriptionStub,
+    session.subOfferAfterLimitTap,
     session.lastTapAt,
     session.dailyBonusActive,
     session.dailyBonusDismissedDay,
@@ -115,6 +128,7 @@ export function useTapSession() {
     blockReason,
     recordTapCommitted,
     setSubscriptionStub,
+    dismissSubOfferAfterLimit,
     dismissDailyBonus,
   ]);
 }

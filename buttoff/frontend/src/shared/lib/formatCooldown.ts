@@ -1,4 +1,4 @@
-/** Форматирует мс в «Ч:ММ:СС» для таймера кулдауна. */
+/** Форматирует мс в «Ч:ММ:СС». */
 export function formatCooldownMs(ms: number) {
   if (ms <= 0) return '0:00:00';
   const totalSec = Math.ceil(ms / 1000);

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Header from './components/Header/Header';
 import Hero from './components/Hero/Hero';
 import Problem from './components/Problem/Problem';
@@ -11,19 +12,20 @@ import CTA from './components/CTA/CTA';
 import Footer from './components/Footer/Footer';
 
 export default function App() {
+  const [lang, setLang] = useState('ru');
   return (
     <div id="app">
-      <Header />
-      <Hero />
-      <Problem />
-      <Solution />
-      <Benefits />
-      <Differentiation />
-      <WhyNow />
-      <CaseSkadi />
-      <Team />
-      <CTA />
-      <Footer />
+      <Header lang={lang} onLangChange={setLang} />
+      <Hero lang={lang} />
+      <WhyNow lang={lang} />
+      <Problem lang={lang} />
+      <Solution lang={lang} />
+      <Benefits lang={lang} />
+      <Differentiation lang={lang} />
+      <CaseSkadi lang={lang} />
+      <Team lang={lang} />
+      <CTA lang={lang} />
+      <Footer lang={lang} />
     </div>
   );
 }

@@ -1,104 +1,51 @@
-import { useRef, useEffect } from 'react';
 import './Benefits.css';
+import { MODEL_LABEL_COPY, WIN_WIN_WIN_COPY, BENEFITS_COPY } from '../../content/benefits';
 
-/**
- * Что получает бизнес — горизонтальный скролл колесиком/тачпадом:
- * вертикальный скролл переводится в боковой, одна карточка пролистывается за несколько прокруток (параллакс).
- */
-const BENEFITS = [
-  {
-    title: 'Бизнес владеет сценарием',
-    text: 'XR-сценарий принадлежит компании, а не платформе устройства. Логика и данные остаются у вас, даже если меняется вендор.',
-  },
-  {
-    title: 'Быстрый запуск процессов',
-    text: 'Один раз описанный процесс можно запускать на разных устройствах без долгой доработки под каждое новое железо.',
-  },
-  {
-    title: 'Меньше стоимости внедрения',
-    text: 'Сценарии переносимы между устройствами и площадками, поэтому не нужно каждый раз строить внедрение с нуля.',
-  },
-  {
-    title: 'Масштабирование без lock-in',
-    text: 'Легче расширять парк устройств и менять технологии, не теряя инвестиции в сценарии и контент.',
-  },
-];
-
-const WHEEL_FACTOR = 0.35; // одна карточка уезжает за несколько прокруток
-const LERP = 0.06;        // задержка: контент «нехотя» догоняет (параллакс)
-
-export default function Benefits() {
-  const scrollRef = useRef(null);
-  const targetRef = useRef(0);
-  const rafRef = useRef(null);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const tick = () => {
-      const target = targetRef.current;
-      const current = el.scrollLeft;
-      const next = current + (target - current) * LERP;
-      if (Math.abs(next - target) < 0.5) {
-        el.scrollLeft = target;
-        rafRef.current = null;
-        return;
-      }
-      el.scrollLeft = next;
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    const onWheel = (e) => {
-      const { deltaY } = e;
-      if (deltaY === 0) return;
-
-      const maxScroll = el.scrollWidth - el.clientWidth;
-      if (maxScroll <= 0) return;
-
-      const atStart = el.scrollLeft <= 1;
-      const atEnd = el.scrollLeft >= maxScroll - 1;
-      const scrollingUp = deltaY < 0;
-      const scrollingDown = deltaY > 0;
-
-      // В начале блока и скролл вверх — отдаём странице (скролл вверх работает)
-      if (atStart && scrollingUp) return;
-      // В конце блока и скролл вниз — отдаём странице
-      if (atEnd && scrollingDown) return;
-
-      const delta = deltaY * WHEEL_FACTOR;
-      targetRef.current = Math.max(0, Math.min(maxScroll, targetRef.current + delta));
-
-      if (!rafRef.current) {
-        rafRef.current = requestAnimationFrame(tick);
-      }
-      e.preventDefault();
-    };
-
-    el.addEventListener('wheel', onWheel, { passive: false });
-    return () => {
-      el.removeEventListener('wheel', onWheel);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    targetRef.current = el.scrollLeft;
-  }, []);
-
+export default function Benefits({ lang = 'ru' }) {
+  const MODEL_LABEL = MODEL_LABEL_COPY[lang] || MODEL_LABEL_COPY.ru;
+  const WIN_WIN_WIN = WIN_WIN_WIN_COPY[lang] || WIN_WIN_WIN_COPY.ru;
+  const BENEFITS = BENEFITS_COPY[lang] || BENEFITS_COPY.ru;
   return (
-    <section className="benefits-wrap" id="benefits">
-      <h2 className="benefits__title">Что получает бизнес</h2>
-      <div className="benefits" ref={scrollRef}>
-        <div className="benefits__content">
-          <div className="benefits__grid">
-            {BENEFITS.map((item) => (
-              <article key={item.title} className="benefits__card">
-                <h3 className="benefits__card-title">{item.title}</h3>
-                <p className="benefits__card-text">{item.text}</p>
-              </article>
+    <section className="benefits" id="benefits">
+      <div className="benefits__wrap">
+        <div className="benefits__inner">
+          <div className="benefits__text">
+            <h2 className="benefits__title">{BENEFITS.title.toUpperCase()}</h2>
+            <p className="benefits__lead">{BENEFITS.lead}</p>
+          </div>
+        <div className="benefits__grid">
+          {BENEFITS.items.map((item) => (
+            <article key={item.title} className="benefits__card">
+              <h3 className="benefits__card-title">{item.title}</h3>
+              <p className="benefits__card-text">{item.text}</p>
+            </article>
+          ))}
+        </div>
+        </div>
+        <div className="benefits__model-block">
+          <h3 className="benefits__model-title">
+            <span className="benefits__model-highlight">{MODEL_LABEL.highlight}</span>{' '}
+            <span className="benefits__model-suffix">{MODEL_LABEL.suffix}</span>
+          </h3>
+          <div className="benefits__model-cols">
+            {WIN_WIN_WIN.map((col) => (
+              <div key={col.id} className="benefits__model-col">
+                <div className="benefits__model-icon" aria-hidden>
+                  {col.id === 'business' && (
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21v-9l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+                  )}
+                  {col.id === 'vendors' && (
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+                  )}
+                  {col.id === 'developers' && (
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+                  )}
+                </div>
+                <div className="benefits__model-card">
+                  <h4 className="benefits__model-card-title">{col.title}</h4>
+                  <p className="benefits__model-text">{col.text}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -106,4 +53,3 @@ export default function Benefits() {
     </section>
   );
 }
-

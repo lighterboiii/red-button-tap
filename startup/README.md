@@ -1,27 +1,40 @@
-# xrable — лендинг
+# XRABLE — лендинг (React + Vite)
 
-Простой статичный лендинг на **HTML + CSS + JS**.
+Одностраничный лендинг XRABLE в стиле продуктовых сайтов Apple.  
+Фронт — **React 18 + Vite**, компоненты лежат в `src/components/*`.
 
-## Запуск проекта
+## Запуск
 
-Убедитесь, что у вас установлен Node.js и npm.
+Требуется Node.js (LTS) и npm.
 
 ```bash
 cd startup
 npm install
-npm start
+npm run dev
 ```
 
-Команда `npm start` поднимет статический сервер (через `npx serve .`). Если браузер не откроется сам, зайдите по адресу из терминала (обычно `http://localhost:3000` или `http://localhost:5000`).
+Vite поднимет дев‑сервер (по умолчанию `http://localhost:5173`).
+
+Сборка продакшн‑версии:
+
+```bash
+npm run build
+npm run preview   # локальный просмотр сборки
+```
 
 ## Структура
 
-- `index.html` — точка входа.
-- `src/main/` — главный модуль:
-  - `main.js` — логика (форма лидов, год в футере).
-  - `main.css` — стили страницы.
+- `index.html` — точка входа Vite.
+- `src/main.jsx` — подключение React‑приложения.
+- `src/App.jsx` — сборка всех секций лендинга.
+- `src/index.css` — глобальные стили, темы, типографика.
+- `src/components/*` — изолированные блоки страницы:
+  - `Hero`, `Problem`, `Solution`, `Benefits`, `Differentiation`,
+  - `WhyNow`, `CaseSkadi`, `Team`, `CTA`, `Header`, `Footer`.
 
-Каждый JS-модуль и его стили лежат в своей папке внутри `src/`. Новые блоки добавляй по тому же принципу: например `src/features/features.js` + `src/features/features.css`.
+Каждый компонент в своей папке: `Component/Component.jsx` + `Component/Component.css`.
 
-Дальше можно добавлять секции, анимации, интеграции с backend/API и т.д.
+## Развитие
+
+Можно добавлять новые секции по тому же паттерну, подключать реальные формы (отправка на backend), аналитику и анимации, не ломая общую структуру проекта.
 

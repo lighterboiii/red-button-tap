@@ -1,13 +1,13 @@
 /* Differentiation — отстройка от рынка, стиль как Hero, референс: текст слева + схема справа */
 .differentiation {
-  padding: 48px 20px 56px;
+  padding: 48px var(--gutter, 20px) 56px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
 }
 
 .differentiation__inner {
-  max-width: 1000px;
+  max-width: var(--content-max, 1360px);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -74,6 +74,7 @@
   padding: 16px 20px;
   width: 100%;
   max-width: 360px;
+  border-radius: 12px;
   background: var(--bg-muted);
   border: 1px solid var(--accent);
   box-shadow: 0 0 0 1px var(--accent-soft);
@@ -101,6 +102,7 @@
 
 .differentiation__layer-tag {
   padding: 4px 10px;
+  border-radius: 8px;
   background: rgba(0, 113, 227, 0.15);
   font-size: 11px;
   font-weight: 600;
@@ -127,6 +129,7 @@
 
 .differentiation__vendor {
   padding: 20px 16px;
+  border-radius: 12px;
   background: var(--bg-muted);
   border: 1px solid var(--border-subtle);
   font-size: 1rem;

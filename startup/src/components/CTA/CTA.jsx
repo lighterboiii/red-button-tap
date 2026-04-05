@@ -1,37 +1,37 @@
 import './CTA.css';
+import { CTA_COPY } from '../../content/cta';
 
-/**
- * CTA / финальный экран — переводим интерес в действие.
- * Приглашение к следующему шагу: демо, пилот, партнёрство.
- */
-const CTA = {
-  title: 'Готовы обсудить пилот, внедрение или партнёрство?',
-  lead: 'XRABLE — уже не просто идея, а продукт, с которым можно начинать работать.',
-  thesis: 'Мы готовы говорить про пилот, внедрение и партнёрство уже сейчас.',
-  primaryButton: 'Запросить демо',
-  options: [
-    'Обсудить пилот',
-    'Партнёрство по устройствам',
-    'Партнёрство по интеграциям',
-  ],
-};
-
-export default function CTABlock() {
+export default function CTABlock({ lang = 'ru' }) {
+  const copy = CTA_COPY[lang] || CTA_COPY.ru;
   return (
     <section className="cta" id="cta">
       <div className="cta__inner">
-        <h2 className="cta__title">{CTA.title}</h2>
-        <p className="cta__lead">{CTA.lead}</p>
-        <p className="cta__thesis">{CTA.thesis}</p>
-        <a href="mailto:hello@xrable.com" className="cta__button">
-          {CTA.primaryButton}
-        </a>
-        <div className="cta__options">
-          {CTA.options.map((label) => (
-            <span key={label} className="cta__pill">
-              {label}
-            </span>
-          ))}
+        <div className="cta__content">
+          <h2 className="cta__title">{copy.title}</h2>
+          <p className="cta__lead">{copy.lead}</p>
+          <p className="cta__thesis">{copy.thesis}</p>
+          <a href="mailto:hello@xrable.com" className="cta__button">
+            {copy.primaryButton}
+          </a>
+        </div>
+        <div className="cta__video">
+          <h3 className="cta__video-heading">{copy.videoHeading}</h3>
+          {CTA_COPY.videoSrc ? (
+            <div className="cta__video-wrap">
+              <iframe
+                src={`${CTA_COPY.videoSrc}?skinColor=ffffff`}
+                title="XRABLE product overview"
+                className="cta__iframe"
+                style={{ border: 'none' }}
+                allow="clipboard-write; autoplay"
+                webkitAllowFullScreen
+                mozallowfullscreen
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            <div className="cta__video-placeholder">Oops, video not found</div>
+          )}
         </div>
       </div>
     </section>

@@ -1,53 +1,158 @@
-/* WhyNow — почему сейчас / историчность рынка, три референса в одном блоке, выше по высоте */
+/* WhyNow — в дизайн-системе Problem: тёмный блок, слева заголовок + описание, справа три карточки */
 .why-now {
-  padding: 24px 16px 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-soft);
+  padding: 48px var(--gutter, 20px) 56px;
+  background: #000;
+  color: #fff;
 }
 
 .why-now__inner {
   width: 100%;
+  max-width: var(--content-max, 1360px);
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.why-now__text {
+  max-width: 480px;
 }
 
 .why-now__title {
   margin: 0 0 20px;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.022em;
-  color: var(--text);
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #fff;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.why-now__title-line2 {
+  font-size: 1.15em;
 }
 
 .why-now__lead {
   margin: 0 0 16px;
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.55;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .why-now__thesis {
-  margin: 0 0 40px;
+  margin: 0;
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
-  color: var(--accent);
+  color: #0071e3;
 }
 
+/* Сетка карточек */
 .why-now__cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 20px;
 }
 
 .why-now__card {
   padding: 28px 24px;
-  background: var(--bg-muted);
-  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
 }
 
-.why-now__card--gap {
-  grid-column: 1 / -1;
+.why-now__card--white {
+  background: #fff;
+  color: #1d1d1f;
+}
+
+.why-now__card--white .why-now__card-title {
+  color: #1d1d1f;
+}
+
+.why-now__card--white .why-now__accent {
+  color: #0071e3;
+}
+
+.why-now__card--white .why-now__subtitle,
+.why-now__card--white .why-now__sectors,
+.why-now__card--white .why-now__footnote,
+.why-now__card--white .why-now__statement,
+.why-now__card--white .why-now__conclusion {
+  color: #6e6e73;
+}
+
+.why-now__card--gray {
+  background: #2c2c2e;
+  color: #fff;
+}
+
+.why-now__card--gray .why-now__card-title {
+  color: #fff;
+}
+
+.why-now__card--gray .why-now__accent {
+  color: #7ed3ff;
+}
+
+.why-now__card--gray .why-now__subtitle,
+.why-now__card--gray .why-now__sectors,
+.why-now__card--gray .why-now__footnote,
+.why-now__card--gray .why-now__statement,
+.why-now__card--gray .why-now__conclusion {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.why-now__card--gray .why-now__vendor {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.why-now__card--gray .why-now__vendor-name {
+  color: #fff;
+}
+
+.why-now__card--gray .why-now__fragmentation-note {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.why-now__card--gray .why-now__fragmentation-connector {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.why-now__card--accent {
+  background: #0071e3;
+  color: #fff;
+}
+
+.why-now__card--accent .why-now__card-title {
+  color: #fff;
+}
+
+.why-now__card--accent .why-now__accent {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.why-now__card--accent .why-now__statement,
+.why-now__card--accent .why-now__conclusion {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.why-now__card--accent .why-now__diagram-top,
+.why-now__card--accent .why-now__diagram-bottom {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.why-now__card--accent .why-now__diagram-missing {
+  background: rgba(255, 59, 48, 0.25);
+  border-color: rgba(255, 59, 48, 0.5);
+}
+
+.why-now__card--accent .why-now__diagram-label {
+  color: #fff;
 }
 
 .why-now__card-title {
@@ -56,35 +161,32 @@
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.3;
-  color: var(--text);
 }
 
 .why-now__accent {
-  color: var(--accent);
+  font-weight: 600;
 }
 
 .why-now__subtitle {
   margin: 0 0 16px;
   font-size: 0.95rem;
-  color: var(--text-muted);
+  line-height: 1.4;
 }
 
 .why-now__sectors {
   margin: 0 0 8px;
   font-size: 1rem;
-  color: var(--text);
 }
 
 .why-now__footnote {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--text-muted);
 }
 
 .why-now__vendors {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
   margin-top: 16px;
 }
 
@@ -92,6 +194,7 @@
   padding: 16px 12px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
+  border-radius: 12px;
   text-align: center;
 }
 
@@ -99,22 +202,55 @@
   display: block;
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--text);
-  margin-bottom: 8px;
 }
 
-.why-now__vendor-closed {
-  display: block;
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.3;
+.why-now__fragmentation-connector {
+  width: 1px;
+  height: 20px;
+  margin: 12px auto 0;
+  background: var(--border-subtle);
+}
+
+.why-now__fragmentation-note {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
 }
 
 .why-now__statement {
   margin: 0 0 20px;
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--text);
+}
+
+/* Карточка gap: текст слева, схема справа */
+.why-now__gap-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.why-now__gap-text {
+  min-width: 0;
+}
+
+.why-now__gap-text .why-now__statement {
+  margin-bottom: 12px;
+}
+
+.why-now__gap-text .why-now__conclusion {
+  margin: 0;
+}
+
+.why-now__gap-visual {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.why-now__gap-visual .why-now__diagram {
+  margin: 0;
 }
 
 .why-now__diagram {
@@ -135,15 +271,19 @@
   gap: 8px;
   padding: 12px 16px;
   width: 100%;
-  background: var(--bg-card);
   border: 1px solid var(--accent);
+  border-radius: 12px;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text);
 }
 
 .why-now__diagram-bottom {
   border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.why-now__diagram-top {
+  border-radius: 12px 12px 0 0;
 }
 
 .why-now__diagram-icon {
@@ -158,14 +298,14 @@
   gap: 6px;
   padding: 14px 12px;
   width: 100%;
-  background: rgba(255, 59, 48, 0.08);
-  border: 1px solid rgba(255, 59, 48, 0.4);
+  background: rgba(255, 59, 48, 0.15);
+  border: 1px solid rgba(255, 59, 48, 0.5);
 }
 
 .why-now__diagram-x {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #dc3545;
+  color: #ff6b6b;
   line-height: 1;
 }
 
@@ -174,7 +314,6 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--text);
   text-align: center;
   line-height: 1.3;
 }
@@ -183,63 +322,99 @@
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--text-muted);
 }
 
+/* 480px+ */
 @media (min-width: 480px) {
   .why-now {
-    padding: 64px 28px 72px;
+    padding: 56px 28px 64px;
+  }
+
+  .why-now__cards {
+    gap: 24px;
   }
 
   .why-now__card {
     padding: 32px 28px;
   }
-
-  .why-now__diagram {
-    max-width: 320px;
-  }
 }
 
+/* Десктоп: две колонки — текст слева, карточки справа; карточки в 2 колонки, gap на всю ширину */
 @media (min-width: 734px) {
   .why-now {
-    padding: 24px 16px 24px;
+    padding: 72px 48px 80px;
   }
 
-  .why-now__lead {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
+  .why-now__inner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 48px;
   }
 
-  .why-now__thesis {
-    margin-bottom: 48px;
+  .why-now__text {
+    flex: 0 0 320px;
+    min-width: 0;
   }
 
   .why-now__cards {
+    flex: 1;
+    min-width: 0;
     grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .why-now__card--gap {
+    grid-column: 1 / -1;
+  }
+
+  .why-now__gap-wrap {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 40px;
+  }
+
+  .why-now__gap-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .why-now__gap-visual {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+  }
+
+  .why-now__gap-visual .why-now__diagram {
+    max-width: 320px;
+  }
+
+  .why-now__vendors {
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
 
   .why-now__card-title {
     font-size: 1.25rem;
   }
-
-  .why-now__vendors {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
 }
 
 @media (min-width: 1024px) {
   .why-now {
-    padding: 24px 16px 24px;
+    padding: 88px 64px 96px;
+  }
+
+  .why-now__inner {
+    gap: 64px;
+  }
+
+  .why-now__text {
+    flex: 0 0 380px;
   }
 
   .why-now__cards {
-    gap: 16px;
+    gap: 24px;
   }
 
-  .why-now__title {
-    font-size: 2rem;
-    margin-bottom: 24px;
+  .why-now__card {
+    padding: 36px 28px;
   }
 }

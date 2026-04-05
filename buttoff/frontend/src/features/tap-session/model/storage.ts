@@ -18,6 +18,8 @@ export type TapSessionStored = {
   dailyBonusDismissedDay: string | null;
   dailyBonusRollDay: string | null;
   dailyBonusActive: boolean;
+  /** Показать офер подписки: только после тапа, которым исчерпан дневной лимит. */
+  subOfferAfterLimitTap: boolean;
 };
 
 function todayKey() {
@@ -40,6 +42,7 @@ function defaultState(): TapSessionStored {
     dailyBonusDismissedDay: null,
     dailyBonusRollDay: null,
     dailyBonusActive: false,
+    subOfferAfterLimitTap: false,
   };
 }
 
@@ -138,6 +141,7 @@ export function loadTapSession(): TapSessionStored {
         ...(p as TapSessionStored),
         v: 4,
         modeForDay,
+        subOfferAfterLimitTap: Boolean(p.subOfferAfterLimitTap),
       });
     }
     if (v === 3 && (parsed.tapMode === 'rationed' || parsed.tapMode === 'endless')) {
@@ -165,6 +169,7 @@ function applyDayLogic(s: TapSessionStored): TapSessionStored {
     dailyBonusDismissedDay: null,
     dailyBonusRollDay: null,
     dailyBonusActive: false,
+    subOfferAfterLimitTap: false,
   };
   return ensureDailyBonusRoll(next);
 }

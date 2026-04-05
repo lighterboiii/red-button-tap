@@ -35,79 +35,199 @@ body {
   text-align: center;
 }
 
-.tap-panel__title {
-  margin: 0 0 0.5rem;
-  font-size: clamp(1.5rem, 5vw, 1.75rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.tap-panel__lead {
-  margin: 0 0 1.5rem;
-  font-size: 0.95rem;
-  line-height: 1.45;
-  color: #a4a4b0;
+.tap-panel__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .tap-panel__button-wrap {
   display: flex;
   justify-content: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.tap-panel__limit {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tap-panel__limit--daily {
+  border-color: rgba(255, 120, 120, 0.35);
+  background: rgba(255, 80, 80, 0.08);
+}
+
+.tap-panel__limit-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9a9aac;
+}
+
+.tap-panel__limit-timer {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.5rem, 8vw, 2rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: #ececf1;
+}
+
+.tap-panel__limit-desc {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #a0a0b4;
 }
 
 .tap-button {
+  --tap-size: min(200px, 55vw);
   position: relative;
-  width: min(200px, 55vw);
-  height: min(200px, 55vw);
+  width: var(--tap-size);
+  height: var(--tap-size);
+  padding: 0;
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  background: linear-gradient(145deg, #ff3b3b 0%, #c41e1e 100%);
-  color: #fff;
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  box-shadow:
-    0 8px 24px rgba(196, 30, 30, 0.45),
-    inset 0 2px 0 rgba(255, 255, 255, 0.2);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
-}
-
-.tap-button:active:not(:disabled) {
-  transform: scale(0.96);
+  background: transparent;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tap-button:disabled {
   cursor: wait;
-  opacity: 0.92;
 }
 
-.tap-button__glow {
-  position: absolute;
-  inset: -6px;
+.tap-button:disabled:not(.tap-button--rolling) .tap-button__glow,
+.tap-button:disabled:not(.tap-button--rolling) .tap-button__fill {
+  animation-play-state: paused;
+  opacity: 0.82;
+}
+
+/* Внешний слой — только реальное нажатие (transition не на том же элементе, что анимация-подсказка) */
+.tap-button__inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 80, 80, 0.35) 0%, transparent 70%);
-  z-index: -1;
-  opacity: 0.9;
+  transform-origin: center center;
+  transition: transform 0.18s cubic-bezier(0.34, 1.35, 0.55, 1);
 }
 
-.tap-button--rolling {
-  animation: tap-pulse 0.6s ease-in-out infinite;
+.tap-button__nudge {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transform-origin: center center;
 }
 
-@keyframes tap-pulse {
+/* «Самонажим» каждые 2 с — на отдельном слое, без transition */
+.tap-button:not(:disabled):not(.tap-button--rolling) .tap-button__nudge {
+  animation: tap-invite 2s cubic-bezier(0.36, 0, 0.2, 1) infinite;
+}
+
+@keyframes tap-invite {
   0%,
   100% {
-    box-shadow:
-      0 8px 24px rgba(196, 30, 30, 0.45),
-      inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    transform: scale(1) translateY(0);
+  }
+  8% {
+    transform: scale(0.82) translateY(6px);
+  }
+  16% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tap-button:active:not(:disabled) .tap-button__nudge {
+  animation: none;
+}
+
+.tap-button:active:not(:disabled) .tap-button__inner {
+  transform: scale(0.76) translateY(8px);
+  transition-duration: 0.07s;
+  transition-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+
+/* Свечение — один ровный пульс */
+.tap-button__glow {
+  position: absolute;
+  inset: -14%;
+  border-radius: 50%;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(255, 70, 70, 0.45) 0%, transparent 68%);
+  filter: blur(14px);
+  pointer-events: none;
+  animation: tap-glow-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes tap-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
   }
   50% {
-    box-shadow:
-      0 12px 32px rgba(255, 60, 60, 0.55),
-      inset 0 2px 0 rgba(255, 255, 255, 0.25);
+    opacity: 0.95;
+    transform: scale(1.04);
+  }
+}
+
+.tap-button__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle at 32% 28%, #ff6a5a 0%, #d42020 42%, #8f0c0c 100%);
+  box-shadow:
+    0 10px 32px rgba(160, 20, 20, 0.42),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 4px 14px rgba(255, 255, 255, 0.2),
+    inset 0 -10px 22px rgba(0, 0, 0, 0.28);
+}
+
+.tap-button--rolling .tap-button__glow {
+  animation-duration: 1.1s;
+}
+
+.tap-button--rolling .tap-button__fill {
+  animation: tap-fill-breathe 1.1s ease-in-out infinite;
+}
+
+@keyframes tap-fill-breathe {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tap-button__glow,
+  .tap-button__fill {
+    animation: none !important;
+  }
+
+  .tap-button:not(:disabled):not(.tap-button--rolling) .tap-button__nudge {
+    animation: none !important;
   }
 }
 
@@ -165,7 +285,6 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 0.35rem;
 }
@@ -176,11 +295,6 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #b8b8c8;
-}
-
-.tap-panel__chance {
-  font-size: 0.7rem;
-  color: #8a8a9a;
 }
 
 .tap-panel__label {
@@ -217,87 +331,8 @@ body {
   transform: scale(0.99);
 }
 
-.tap-panel__status {
-  margin: 0 0 1rem;
-  font-size: 0.88rem;
-  line-height: 1.4;
-  color: #9a9aac;
-}
-
-.tap-panel__banner {
-  margin: 0 0 1rem;
-  padding: 0.75rem 0.85rem;
-  border-radius: 12px;
-  text-align: left;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.5rem;
-  border: 1px solid rgba(255, 200, 120, 0.35);
-  background: rgba(255, 180, 80, 0.1);
-}
-
-.tap-panel__banner-text {
-  margin: 0;
-  flex: 1 1 12rem;
-  font-size: 0.88rem;
-  line-height: 1.45;
-  color: #e8e0d8;
-}
-
-.tap-panel__banner-dismiss {
-  flex-shrink: 0;
-  padding: 0.35rem 0.65rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.tap-panel__today-mode {
-  margin: 0 0 1.25rem;
-  padding: 0.85rem 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 90, 90, 0.4);
-  background: rgba(255, 60, 60, 0.08);
-  text-align: left;
-}
-
-.tap-panel__today-mode-label {
-  margin: 0 0 0.35rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9090a4;
-}
-
-.tap-panel__today-mode-title {
-  margin: 0 0 0.35rem;
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.tap-panel__today-mode-desc {
-  margin: 0;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: #a8a8bc;
-}
-
-.tap-panel__today-mode-desc code {
-  font-size: 0.75rem;
-  word-break: break-all;
-}
-
-.tap-panel__status--endless {
-  color: #8ec8a8;
-}
-
 .tap-panel__sub-box {
-  margin: 0 0 1.25rem;
+  margin: 0 0 1rem;
   padding: 0.75rem 0.85rem;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.04);
@@ -306,14 +341,22 @@ body {
 }
 
 .tap-panel__sub-text {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.65rem;
   font-size: 0.82rem;
   line-height: 1.45;
   color: #9a9aac;
 }
 
+.tap-panel__sub-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .tap-panel__sub-cta {
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 7rem;
   padding: 0.55rem 0.75rem;
   border-radius: 10px;
   border: 1px solid rgba(120, 200, 255, 0.35);
@@ -327,4 +370,14 @@ body {
   border-color: rgba(120, 255, 180, 0.45);
   background: rgba(80, 200, 120, 0.18);
   color: #d0ffe8;
+}
+
+.tap-panel__sub-dismiss {
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: #a0a0b4;
+  font-size: 0.88rem;
+  cursor: pointer;
 }

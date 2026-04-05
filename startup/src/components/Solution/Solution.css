@@ -1,13 +1,18 @@
 /* Solution — паддинги внутри, центрирование как у Apple */
 .solution {
-  padding: 40px 20px 48px;
+  padding: 40px var(--gutter, 20px) 48px;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-card);
 }
 
+.solution__wrap {
+  max-width: var(--content-max, 1360px);
+  margin: 0 auto;
+}
+
 .solution__content {
-  max-width: 640px;
+  max-width: 740px;
+  text-wrap: balance;
   margin: 0 auto;
   text-align: center;
 }

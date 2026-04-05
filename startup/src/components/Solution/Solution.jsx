@@ -1,25 +1,17 @@
 import './Solution.css';
+import { SOLUTION_COPY } from '../../content/solution';
 
-/**
- * Решение / что делает XRABLE — суть продукта.
- * Смысл: XRABLE превращает разрозненные XR-внедрения в управляемую и переносимую систему.
- */
-const SOLUTION = {
-  title: 'Что делает XRABLE',
-  lead:
-    'XRABLE — единый слой исполнения, совместимости и управления, который соединяет бизнес-сценарии с разными устройствами.',
-  body: 'Один раз описать рабочий процесс — потом запускать, контролировать и масштабировать без жёсткой зависимости от одного производителя.',
-  thesis: 'XRABLE превращает разрозненные XR-внедрения в управляемую и переносимую систему.',
-};
-
-export default function Solution() {
+export default function Solution({ lang = 'ru' }) {
+  const SOLUTION = SOLUTION_COPY[lang] || SOLUTION_COPY.ru;
   return (
     <section className="solution" id="solution">
+      <div className="solution__wrap">
       <div className="solution__content">
         <h2 className="solution__title">{SOLUTION.title}</h2>
         <p className="solution__lead">{SOLUTION.lead}</p>
         <p className="solution__body">{SOLUTION.body}</p>
         <p className="solution__thesis">{SOLUTION.thesis}</p>
+      </div>
       </div>
     </section>
   );

@@ -1,118 +1,250 @@
-/* Benefits — контейнер с overflow = ref, внутри только карточки */
-.benefits-wrap {
-  width: 100%;
-}
-
+/* Benefits — светлый фон, заголовок сверху, ниже текст слева и сетка карточек справа */
 .benefits {
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  padding: 48px var(--gutter, 20px) 56px;
+  background: #fff;
+  border: 1px solid var(--border-subtle);
 }
 
-.benefits::-webkit-scrollbar {
-  display: none;
-}
-
-.benefits__content {
-  width: max-content;
-  min-width: 100%;
+.benefits__wrap {
+  width: 100%;
+  max-width: var(--content-max, 1360px);
+  margin: 0 auto;
 }
 
 .benefits__title {
-  margin: 0;
-  padding: 32px 20px 24px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: -0.022em;
+  margin: 0 0 20px;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
   color: var(--text);
-  text-align: center;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.benefits__inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.benefits__text {
+  max-width: 520px;
+}
+
+.benefits__lead {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-muted);
 }
 
 .benefits__grid {
-  display: flex;
-  flex-direction: row;
-  width: max-content;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
 }
 
 .benefits__card {
-  flex: 0 0 100vw;
-  width: 100vw;
-  box-sizing: border-box;
-  min-height: 80vh;
-  padding: 32px 24px 48px;
+  padding: 28px 24px;
   background: var(--bg-muted);
-  border: 1px solid var(--border-subtle);
-  border-left: none;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-.benefits__card:first-of-type {
-  border-left: 1px solid var(--border-subtle);
+  gap: 12px;
 }
 
 .benefits__card-title {
-  margin: 0 0 16px;
-  font-size: 1.35rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
   color: var(--text);
+  text-transform: uppercase;
 }
 
 .benefits__card-text {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   line-height: 1.55;
   color: var(--text-muted);
-  max-width: 560px;
+}
+
+/* WIN-WIN-WIN модель — краткое пояснение под основными блоками */
+.benefits__model-block {
+  padding-top: 40px;
+}
+
+.benefits__model-title {
+  margin: 0 0 28px;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.benefits__model-highlight {
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.benefits__model-suffix {
+  color: var(--text);
+}
+
+.benefits__model-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.benefits__model-col {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+
+.benefits__model-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  color: var(--accent);
+}
+
+.benefits__model-icon svg {
+  flex-shrink: 0;
+}
+
+.benefits__model-card {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  background: var(--bg-muted);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.benefits__model-card-title {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.benefits__model-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--text-muted);
 }
 
 /* 480px+ */
 @media (min-width: 480px) {
-  .benefits__title {
-    padding: 40px 28px 28px;
-    font-size: 1.65rem;
+  .benefits {
+    padding: 56px 28px 64px;
+  }
+
+  .benefits__grid {
+    gap: 24px;
   }
 
   .benefits__card {
-    min-height: 82vh;
-    padding: 40px 32px 56px;
+    padding: 32px 28px;
   }
 
   .benefits__card-title {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    font-size: 1.15rem;
   }
 
-  .benefits__card-text {
-    font-size: 1.1rem;
+  .benefits__model-cols {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: none;
+    gap: 24px;
+  }
+
+  .benefits__model-col {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .benefits__model-card {
+    flex: none;
+    min-width: 0;
+    width: 100%;
+    padding: 16px 20px;
   }
 }
 
+/* Десктоп: текст слева, сетка справа, 2 колонки карточек */
 @media (min-width: 734px) {
-  .benefits__title {
-    padding: 48px 48px 32px;
-    font-size: 1.75rem;
+  .benefits {
+    padding: 72px 48px 80px;
+  }
+
+  .benefits__inner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 48px;
+  }
+
+  .benefits__text {
+    flex: 0 0 320px;
+    min-width: 0;
+  }
+
+  .benefits__grid {
+    flex: 1;
+    min-width: 0;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
 
   .benefits__card {
-    min-height: 85vh;
-    padding: 48px 48px 64px;
-  }
-
-  .benefits__card-title {
-    font-size: 1.65rem;
+    padding: 36px 28px;
   }
 }
 
 @media (min-width: 1024px) {
-  .benefits__card {
-    padding: 56px 64px 72px;
+  .benefits {
+    padding: 88px 64px 96px;
   }
 
-  .benefits__card-text {
-    max-width: 640px;
+  .benefits__inner {
+    gap: 64px;
+  }
+
+  .benefits__text {
+    flex: 0 0 380px;
+  }
+
+  .benefits__grid {
+    gap: 28px;
+  }
+
+  .benefits__model-block {
+    margin-top: 48px;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 48px;
+  }
+
+  .benefits__model-title {
+    margin-bottom: 32px;
+  }
+
+  .benefits__model-cols {
+    gap: 28px;
   }
 }

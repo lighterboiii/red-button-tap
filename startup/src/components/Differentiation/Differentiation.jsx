@@ -1,35 +1,18 @@
 import './Differentiation.css';
+import { DIFFERENTIATION_COPY } from '../../content/differentiation';
 
-/**
- * Отстройка от рынка / от Google XR и других.
- * Где XRABLE на карте рынка: не «ещё одна XR-платформа», а новый инфраструктурный уровень.
- */
-const DIFFERENTIATION = {
-  title: 'Мы не конкурируем с крупными вендорами',
-  titleAccent: 'конкурируем',
-  bullets: [
-    'Не заменяем Apple или Google',
-    'Архитектурный слой над экосистемами',
-    'Проверенный инфраструктурный подход',
-  ],
-  diagram: {
-    layerLabel: 'НАД',
-    caption: 'Нейтральный архитектурный слой',
-    vendors: ['Apple', 'Google', 'Microsoft', 'Meta'],
-  },
-};
-
-export default function Differentiation() {
+export default function Differentiation({ lang = 'ru' }) {
+  const DIFFERENTIATION = DIFFERENTIATION_COPY[lang] || DIFFERENTIATION_COPY.ru;
   return (
     <section className="differentiation" id="differentiation">
       <div className="differentiation__inner">
         <div className="differentiation__text">
           <h2 className="differentiation__title">
-            Мы не{' '}
+            {lang === 'ru' ? 'Мы ' : 'We '}
             <span className="differentiation__title-accent">
               {DIFFERENTIATION.titleAccent}
             </span>{' '}
-            с крупными вендорами
+            {lang === 'ru' ? 'с крупными вендорами' : 'with major vendors'}
           </h2>
           <ul className="differentiation__list">
             {DIFFERENTIATION.bullets.map((item) => (
